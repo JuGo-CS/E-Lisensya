@@ -1,0 +1,1 @@
+Same here. All js files to be used should be inside this directory.

@@ -1,0 +1,1 @@
+Same here. All images to be used should be inside this directory.
