@@ -1,1 +1,0 @@
-All of the CSS files should be on this folder.

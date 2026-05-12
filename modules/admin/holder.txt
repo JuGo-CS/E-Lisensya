@@ -1,2 +1,0 @@
-All admin functionalities such as showing all students currently occupying the dorms, list of staff personnel, 
-the logs for filed permits, etc... must be present here and here only.

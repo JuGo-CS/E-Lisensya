@@ -1,2 +1,0 @@
-All reusable UI parts such as header, side bar, etc... must
-be created here.
