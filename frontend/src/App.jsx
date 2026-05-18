@@ -2,7 +2,7 @@ import Navbar from './components/Navbar.jsx'
 import Header from './components/Header.jsx';
 import StudentsPermits from './pages/StudentsPermits.jsx';
 import StudentRoommates from './pages/StudentRoommates.jsx';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
 
@@ -14,6 +14,7 @@ function App() {
 				<Header />
 				<Navbar />
 
+			<BrowserRouter>
 				<div>
 					<Routes>
 						<Route path="/" element={<StudentsPermits id={1} />} />
@@ -21,9 +22,7 @@ function App() {
 						<Route path="/profile" element={<div className="p-4">Under Construction</div>} />
 					</Routes>
 				</div>
-
-				{/* <div>
-					<StudentsPermits id={1}/>
+			</BrowserRouter>
 				</div> */}
 
 				{/* <div>
