@@ -25,3 +25,8 @@ SET
   `username` = LOWER(REPLACE(CONCAT(`first_name`, `last_name`), ' ', '')),
   `password` = LOWER(REPLACE(CONCAT(`last_name`), ' ', ''))
 WHERE `username` IS NULL OR `username` = '';
+
+UPDATE `person` 
+SET
+	is_student = 1
+WHERE personal_id != 4 and personal_id != 5;
