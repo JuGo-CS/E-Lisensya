@@ -16,8 +16,8 @@ function App() {
 
 				<div>
 					<Routes>
-						<Route path="/" element={<StudentsPermits id={1} />} />
-						<Route path="/roommates" element={<StudentRoommates id={1} />} />
+						<Route path="/" element={<StudentsPermits id={2} />} />
+						<Route path="/roommates" element={<StudentRoommates id={2} />} />
 						<Route path="/profile" element={<div className="p-4">Under Construction</div>} />
 					</Routes>
 				</div>
