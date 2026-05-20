@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS e_lisensya;
+USE e_lisensya;
+
 -- 1. PERSON
 CREATE TABLE `person` (
     `personal_id` int(11) NOT NULL AUTO_INCREMENT,
