@@ -53,6 +53,7 @@ if ($id) {
             "permit_id" => (int)$permit["permit_id"],
             "student_id" => (int)$permit["student_id"],
             "permit_name" => $permit["permit_name"],
+            "status" => $permit["status"],
             "date_created" => $full_created_date,
             "valid_until" => $full_valid_datetime
         ]);
