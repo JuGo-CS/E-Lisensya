@@ -26,7 +26,7 @@ function App() {
 				{user && (
                     <>
 						<Header />
-						<Navbar />  
+						<Navbar isStudent={user.is_student}/>  
 
 						<div>
 							<Routes>
