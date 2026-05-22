@@ -42,7 +42,7 @@ $serverOutside = ($serverHour < 6 || $serverHour > 18);
 // }
 
 // prevent more than 1 active pending permit per student
-$check = $conn->prepare("SELECT COUNT(*) AS cur_permit FROM permit WHERE UPPER(TRIM(status)) = 'PENDING' AND student_id = ?");
+$check = $conn->prepare("SELECT COUNT(*) AS cur_permit FROM permit WHERE UPPER(TRIM(status)) = 'ACTIVE' AND student_id = ?");
 $check->bind_param("i", $student_id);
 $check->execute();
 $res = $check->get_result()->fetch_assoc();
@@ -55,7 +55,7 @@ if ($res && isset($res['cur_permit']) && (int)$res['cur_permit'] > 0) {
 }
 
 // insert permit
-$status = 'PENDING';
+$status = 'ACTIVE';
 
 // Use authoritative server time (Philippines) for stored created date/time
 $current_date = date('Y-m-d');

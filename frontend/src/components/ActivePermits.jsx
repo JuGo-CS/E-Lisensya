@@ -13,6 +13,7 @@ const ActivePermits = ({ studentId }) => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [cancelResult, setCancelResult] = useState(null);
+    const [isReturned, setIsReturned] = useState(false);
     const { post } = usePost();
 
     if (isPending) return <LoadScreen />;
@@ -20,6 +21,30 @@ const ActivePermits = ({ studentId }) => {
 
     // build the main content depending on whether there's an active permit
     let mainContent;
+
+    const handleLogReturn = async () => {
+        setIsReturned(false);
+        setCancelResult(null);
+        const url = `http://${host}/sample/E-Lisensya/backend/student/LogReturn.php`;
+        try {
+            const result = await post(url, {
+                permit_id: data?.permit_id,
+                actor_id: studentId,
+            });
+
+            const msg = result.response?.message || result.error?.message || result.error || JSON.stringify(result.response || result.error || {});
+            if (result.success && result.response && result.response.success) {
+                setIsReturned(true);
+                // refresh permit data
+                setTimeout(() => setRefreshKey(k => k + 1), 500);
+            } else {
+                setCancelResult(msg);
+            }
+        } catch (err) {
+            setCancelResult(err.message || 'Request failed');
+        }
+    }
+     
 
     if (!data || data.permit === null) {
         mainContent = (
@@ -52,20 +77,30 @@ const ActivePermits = ({ studentId }) => {
                     </div>
                 </div>
 
-                <div className='mx-auto font-extrabold text-xl sm:text-3xl h-13 sm:h-18 grid grid-cols-2 gap-4 sm:gap-8 w-73 sm:w-120 item'>
-                    <button
-                        onClick={() => {
-                            setCancelResult(null);
-                            setShowCancelModal(true);
-                        }}
-                        className="flex items-center justify-center text-gray-800 bg-gray-200 hover:bg-slate-950 hover:text-white rounded-xl cursor-pointer transition-all"
-                    >
-                        Cancel
-                    </button>
-                    <button className="flex items-center justify-center bg-slate-700 hover:bg-slate-950 text-white rounded-xl cursor-pointer transition-all">
-                        Log Return
-                    </button>
-                </div>
+                {!isReturned && 
+                    <div className='mx-auto font-extrabold text-xl sm:text-3xl h-13 sm:h-18 grid grid-cols-2 gap-4 sm:gap-8 w-73 sm:w-120 item '>
+                        <button
+                            onClick={() => {
+                                setCancelResult(null);
+                                setShowCancelModal(true);
+                            }}
+                            className="flex items-center justify-center text-gray-800 bg-gray-200 hover:bg-slate-950 hover:text-white rounded-xl cursor-pointer transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button onClick={handleLogReturn} className="flex items-center justify-center bg-slate-700 hover:bg-slate-950 text-white rounded-xl cursor-pointer transition-all">
+                            Log Return
+                        </button>
+                    </div>
+                }
+
+                {isReturned && 
+                    <div className='flex items-center justify-center mx-auto font-extrabold italic text-xl sm:text-3xl h-13 sm:h-18 w-73 sm:w-120 item cursor-not-allowed bg-gray-300 text-gray-600 rounded-xl'>
+                        <p>Pending approval...</p>
+                    </div>
+                }
+
+
             </div>
         );
     }

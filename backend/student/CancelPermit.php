@@ -47,9 +47,9 @@ $permit_owner_id = (int)$row['student_id'];
 $permit_status = strtoupper($row['status']);
 $q->close();
 
-// only pending permits can be cancelled
-if ($permit_status !== 'PENDING') {
-    echo json_encode(["success" => false, "message" => "only pending permits can be cancelled"]);
+// only active permits can be cancelled
+if ($permit_status !== 'ACTIVE') {
+    echo json_encode(["success" => false, "message" => "only active permits can be cancelled"]);
     $conn->close();
     exit;
 }

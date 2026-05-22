@@ -14,6 +14,7 @@ const AddPermit = ({ id, onFiled }) => {
     const hour = now.getHours();
 
     // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
+    // don't forget to 'uncomment' man sa dalum ni nga part + ang ara sa AddPermit.jsx
     // const allowedNow = hour >= 6 && hour <= 18;
     const allowedNow = 1;
 

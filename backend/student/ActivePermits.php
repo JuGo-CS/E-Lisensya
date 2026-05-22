@@ -7,7 +7,7 @@ include '../config/DBConnector.php';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($id) {
-    $query = $conn->prepare("SELECT * FROM permit WHERE status='PENDING' AND student_id = ?");
+    $query = $conn->prepare("SELECT * FROM permit WHERE status='ACTIVE' OR status='PENDING' AND student_id = ?");
     $query->bind_param("i", $id);
     $query->execute();
     $active_permit = $query->get_result(); 
