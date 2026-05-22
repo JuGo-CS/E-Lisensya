@@ -63,7 +63,8 @@ const AddPermit = ({ id, onFiled }) => {
             student_id: id,
             personnel_id: 0,
             permit_name: permitType,
-            client_time: nowCheck.toISOString()
+            client_time: nowCheck.toISOString(),
+            client_offset_minutes: nowCheck.getTimezoneOffset()
         });
 
         console.log('FilePermit result:', result);
@@ -82,7 +83,7 @@ const AddPermit = ({ id, onFiled }) => {
 
     return (
         <div className="h-20 sm:h-25 mt-5 mx-5 sm:mx-7 -mb-4 text-black">
-            <button onClick={open} disabled={!allowedNow} className={`h-full w-full rounded-xl text-white font-black text-3xl sm:text-5xl transition-all ${allowedNow ? 'bg-slate-700 hover:bg-slate-970 cursor-pointer' : 'bg-gray-400 opacity-60 cursor-not-allowed'}`}>
+            <button onClick={open} disabled={!allowedNow} className={`h-full w-full rounded-xl text-white font-black text-3xl sm:text-5xl transition-all ${allowedNow ? 'bg-slate-700 hover:bg-slate-900 cursor-pointer' : 'bg-gray-400 opacity-60 cursor-not-allowed'}`}>
                 File A Permit
             </button>
 

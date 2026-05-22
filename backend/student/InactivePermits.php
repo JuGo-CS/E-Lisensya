@@ -31,12 +31,19 @@ if ($id) {
                 $pstmt->close();
             }
 
-            $time_created_ampm = isset($permit["time_created"]) && $permit["time_created"] !== null ? date("g:i a", strtotime($permit["time_created"])) : "N/A";
+            // combine date and time and use gmdate to avoid server timezone shifting client-local timestamps
+            if (isset($permit["date_created"]) && isset($permit["time_created"])) {
+                $created_dt = strtotime($permit["date_created"] . ' ' . $permit["time_created"]);
+                $time_created_ampm = date("g:i a", $created_dt);
+                $date_created_fmt = date("n/j/Y", strtotime($permit["date_created"]));
+            } else {
+                $time_created_ampm = "N/A";
+                $date_created_fmt = "N/A"; 
+            }
 
             if (!empty($permit["arrival_time"]) && !empty($permit["arrival_date"])) {
-                $arrival_time_ampm = date("g:i a", strtotime($permit["arrival_time"]));
-                $arrival_time_date_fmt = date("n/j/Y", strtotime($permit["arrival_date"]));
-                $full_arrival_datetime = $arrival_time_ampm . ', ' . $arrival_time_date_fmt;
+                $arrival_dt = strtotime($permit["arrival_date"] . ' ' . $permit["arrival_time"]);
+                $full_arrival_datetime = date("g:i a", $arrival_dt) . ', ' . date("n/j/Y", strtotime($permit["arrival_date"]));
             } else {
                 $full_arrival_datetime = "N/A";
             }
@@ -45,8 +52,6 @@ if ($id) {
             if($personnel_name == null){
                 $personnel_name = "N/A";
             } 
-
-            $date_created_fmt = isset($permit["date_created"]) && $permit["date_created"] !== null ? date("n/j/Y", strtotime($permit["date_created"])) : "N/A";
 
             $full_created_date = $time_created_ampm . ', ' . $date_created_fmt;
 

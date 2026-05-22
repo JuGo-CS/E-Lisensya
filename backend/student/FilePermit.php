@@ -28,23 +28,13 @@ if (!$student_id || !$permit_name) {
     exit;
 }
 
-// server-side time window check (06:00 - 18:00) but also accept client_time if provided
+// server-side time window check (06:00 - 18:00)
 $serverHour = (int)date('H');
-$clientHour = null;
-if (isset($data['client_time'])) {
-    $ct = strtotime($data['client_time']);
-    if ($ct !== false) {
-        $clientHour = (int)date('G', $ct);
-    }
-}
-
-// block only if BOTH server time and client time are outside allowed window
 $serverOutside = ($serverHour < 6 || $serverHour > 18);
-$clientOutside = ($clientHour !== null) ? ($clientHour < 6 || $clientHour > 18) : true;
 
 
 // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
-// if ($serverOutside && $clientOutside) {
+// if ($serverOutside) {
 //     $msg = sprintf("Filing not allowed at this time. Allowed between %s and %s.", date('g:i A', strtotime('06:00')), date('g:i A', strtotime('18:00')));
 //     echo json_encode(["success" => false, "message" => $msg]);
 //     $conn->close();
@@ -66,6 +56,8 @@ if ($res && isset($res['cur_permit']) && (int)$res['cur_permit'] > 0) {
 
 // insert permit
 $status = 'PENDING';
+
+// Use authoritative server time (Philippines) for stored created date/time
 $current_date = date('Y-m-d');
 $current_time = date('H:i:s');
 
