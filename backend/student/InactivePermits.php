@@ -41,6 +41,11 @@ if ($id) {
                 $full_arrival_datetime = "N/A";
             }
 
+            
+            if($personnel_name == null){
+                $personnel_name = "N/A";
+            } 
+
             $date_created_fmt = isset($permit["date_created"]) && $permit["date_created"] !== null ? date("n/j/Y", strtotime($permit["date_created"])) : "N/A";
 
             $full_created_date = $time_created_ampm . ', ' . $date_created_fmt;
