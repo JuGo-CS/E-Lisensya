@@ -6,11 +6,24 @@ import PersonnelPermits from './pages/PersonnelPermits.jsx';
 import PersonnelRoommates from './pages/PersonnelRoommates.jsx';
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
-	// const [isLogin, setIsLogin] = useState(false);
-	const [user, setUser] = useState(null);
+	// persist user in localStorage so reloads keep the session
+	const [user, setUser] = useState(() => {
+		try {
+			const raw = localStorage.getItem('user');
+			return raw ? JSON.parse(raw) : null;
+		} catch (e) {
+			return null;
+		}
+	});
+
+	useEffect(() => {
+		// keep localStorage in sync when `user` changes
+		if (user) localStorage.setItem('user', JSON.stringify(user));
+		else localStorage.removeItem('user');
+	}, [user]);
 
   	return (
 		<div className="h-screen w-full bg-slate-200 font-['Cambria',serif] overflow-hidden">
@@ -19,8 +32,8 @@ function App() {
 
 				
 				{!user &&
-                    <Login onLoginSuccess={(userData) => setUser(userData)} />
-                }
+					<Login onLoginSuccess={(userData) => setUser(userData)} />
+				}
 				
 
 				{user && (
