@@ -11,12 +11,21 @@ const useFetch = (url) => {
         
         // setTimeout(() => {
             fetch(url)
-                .then(res => {
-                    if(!res.ok){
-                        throw Error("Could not fetch data.");
+                .then(async res => {
+                    if (!res.ok) {
+                        // try to read body for more info
+                        const text = await res.text();
+                        throw new Error(text || `HTTP ${res.status}`);
                     }
 
-                    return res.json()
+                    const text = await res.text();
+                    try {
+                        const json = JSON.parse(text);
+                        return json;
+                    } catch (e) {
+                        // non-JSON response
+                        throw new Error(text || 'Invalid JSON response');
+                    }
                 })
                 .then((data) => {
                     setData(data);

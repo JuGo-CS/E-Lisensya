@@ -4,7 +4,7 @@
 //NOTE: data still stays in db
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // handle preflight
@@ -19,15 +19,15 @@ include '../config/DBConnector.php';
 $data = json_decode(file_get_contents("php://input"), true);
 
 // expected: permit_id, actor_id, actor_is_student (1 = student, 0 = personnel)
-if (!is_array($data) || !isset($data['permit_id']) || !isset($data['actor_id']) || !isset($data['actor_is_student'])) {
+$permit_id = isset($data['permit_id']) ? (int)$data['permit_id'] : null;
+$actor_id = isset($data['actor_id']) ? (int)$data['actor_id'] : null;
+$actor_is_student = isset($data['actor_is_student']) ? (int)$data['actor_is_student'] : null;
+
+if (!$permit_id || !$actor_id || !isset($actor_is_student)) {
     echo json_encode(["success" => false, "message" => "incomplete arguments"]);
     $conn->close();
     exit;
 }
-
-$permit_id = (int)$data['permit_id'];
-$actor_id = (int)$data['actor_id'];
-$actor_is_student = (int)$data['actor_is_student'];
 
 // fetch permit and check who filed it and permit's status
 $q = $conn->prepare("SELECT student_id, status FROM permit WHERE permit_id = ?");

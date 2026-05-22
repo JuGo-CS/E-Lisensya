@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import usePost from '../../../database/usePost.jsx';
 import LoadScreen from './LoadScreen';
 import useFetch from '../../../database/useFetch.jsx';
 import AddPermit from './AddPermit.jsx';
@@ -12,6 +13,7 @@ const ActivePermits = ({ studentId }) => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [cancelResult, setCancelResult] = useState(null);
+    const { post } = usePost();
 
     if (isPending) return <LoadScreen />;
     if (errorMes) return <p style={{ color: 'red' }}>Error: {errorMes}</p>;
@@ -22,8 +24,8 @@ const ActivePermits = ({ studentId }) => {
     if (!data || data.permit === null) {
         mainContent = (
             <div>
-                <p className=' mx-4 sm:mx-7 text-base sm:text-2xl text-gray-600 italic'>You do do not have any active permit.</p>
-                <AddPermit id={studentId} />
+                <p className=' mx-4 sm:mx-7 text-base sm:text-2xl text-gray-600 italic'>You do not have any active permit.</p>
+                <AddPermit id={studentId} onFiled={() => setRefreshKey(k => k + 1)} />
             </div>
         );
     } else {
@@ -56,7 +58,7 @@ const ActivePermits = ({ studentId }) => {
                             setCancelResult(null);
                             setShowCancelModal(true);
                         }}
-                        className="flex items-center justify-center bg-slate-700 hover:bg-slate-950 text-white rounded-xl cursor-pointer transition-all"
+                        className="flex items-center justify-center text-gray-800 bg-gray-200 hover:bg-slate-950 hover:text-white rounded-xl cursor-pointer transition-all"
                     >
                         Cancel
                     </button>
@@ -93,19 +95,16 @@ const ActivePermits = ({ studentId }) => {
                             setIsCancelling(true);
                             setCancelResult(null);
                             try {
-                                const res = await fetch(`http://${host}/sample/E-Lisensya/backend/student/CancelPermit.php`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        permit_id: data?.permit_id,
-                                        actor_id: studentId,
-                                        actor_is_student: 1
-                                    })
+                                const url = `http://${host}/sample/E-Lisensya/backend/student/CancelPermit.php`;
+                                const result = await post(url, {
+                                    permit_id: data?.permit_id,
+                                    actor_id: studentId,
+                                    actor_is_student: 1
                                 });
-                                const result = await res.json();
-                                setCancelResult(result.message || JSON.stringify(result));
+
+                                setCancelResult(result.response?.message || JSON.stringify(result.response || result.error));
                                 setIsCancelling(false);
-                                if (result.success) {
+                                if (result.success && result.response && result.response.success) {
                                     // refresh data without reloading the page
                                     setTimeout(() => {
                                         setShowCancelModal(false);
@@ -113,7 +112,7 @@ const ActivePermits = ({ studentId }) => {
                                     }, 700);
                                 }
                             } catch (err) {
-                                setCancelResult('Request failed.');
+                                setCancelResult(err.message || 'Request failed.');
                                 setIsCancelling(false);
                             }
                         }}

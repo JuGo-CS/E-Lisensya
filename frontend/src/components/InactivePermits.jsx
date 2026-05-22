@@ -16,9 +16,14 @@ const InactivePermits = ({ studentId }) => {
     }
 
     return (
-        <div className="flex flex-col gap-4 overflow-y-auto max-h-full pb-4">
+        <div className="flex flex-col gap-4 overflow-y-auto max-h-full max-sm:mb-1">
             {data.map((permitItem, index) => {
-                const cardColor = permitItem.status === 'BREACHED' ? 'bg-red-100' : 'bg-green-100';
+                const statusColors = {
+                    BREACHED: 'bg-red-100',
+                    CANCELLED: 'bg-gray-200',
+                };
+
+                const cardColor = statusColors[permitItem.status] || 'bg-green-100';
 
                 return (
                     <div key={index} className={`h-auto ${cardColor} rounded-2xl  border border-slate-900 mx-4 sm:mx-7 shrink-0`}>
