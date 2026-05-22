@@ -40,6 +40,8 @@ if ($id) {
         $full_valid_datetime = $valid_until_ampm . ', ' . $valid_until_date_fmt;
 
         echo json_encode([
+            "permit_id" => (int)$permit["permit_id"],
+            "student_id" => (int)$permit["student_id"],
             "permit_name" => $permit["permit_name"],
             "date_created" => $full_created_date,
             "valid_until" => $full_valid_datetime
