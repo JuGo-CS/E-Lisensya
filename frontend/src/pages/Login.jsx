@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 const Login = ({ onLoginSuccess }) => {
-    // Replicating your useFetch state structure for consistency!
     const [isPending, setIsPending] = useState(false);
     const [errorMes, setErrorMes] = useState(null);
 
@@ -14,10 +13,9 @@ const Login = ({ onLoginSuccess }) => {
         const usernameInput = formData.get("username");
         const passwordInput = formData.get("password");
 
-        // Building the URL exactly how your hook and PHP expect it
-        const url = `http://localhost/your_project_folder/LoggingIn.php?userName=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
+        const host = window.location.hostname;
+        const url = `http://${host}/sample/E-Lisensya/backend/auth/LoggingIn.php?userName=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
 
-        // Running your exact fetch logic structure on-demand
         fetch(url)
             .then(res => {
                 if (!res.ok) {
@@ -30,7 +28,10 @@ const Login = ({ onLoginSuccess }) => {
                 
                 // Checking the response database content matches your PHP echo
                 if (data.personal_id !== null && data.personal_id !== undefined) {
-                    onLoginSuccess(); // Switch views and proceed to routes!
+                    onLoginSuccess({
+                        personal_id: Number(data.personal_id),
+                        is_student: Number(data.is_student)
+                    });
                 } else {
                     throw Error("Invalid username or password.");
                 }
@@ -42,7 +43,7 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return ( 
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 bg-white rounded-2xl mx-5 sm:mx-10 max-sm:mt-20 sm:m-auto">
+        <div className="flex flex-col justify-center px-6 py-12 bg-white rounded-2xl mx-5 sm:mx-10 max-sm:mt-20 sm:m-auto">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" className="mx-auto h-10 w-auto" />
                 <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-black sm:text-4xl">Sign in to your account</h2>
