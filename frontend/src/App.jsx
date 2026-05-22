@@ -25,10 +25,10 @@ function App() {
 		else localStorage.removeItem('user');
 	}, [user]);
 
-  	return (
-		<div className="h-screen w-full bg-slate-200 font-['Cambria',serif] overflow-hidden">
-	
-			<div className={`h-screen sm:max-w-150 mx-auto ${user ? "bg-white" :  "bg-slate-900"} flex flex-col overflow-hidden shadow-xl`}>
+	return (
+		<div className="h-screen w-full bg-slate-200 font-['Cambria',serif]">
+
+		<div className={`h-screen sm:max-w-150 mx-auto ${user ? "bg-white" :  "bg-slate-900"} flex flex-col shadow-xl`}>
 
 				
 				{!user &&
@@ -41,7 +41,7 @@ function App() {
 						<Header />
 						<Navbar isStudent={user.is_student}/>  
 
-						<div>
+						<div className="flex-1 min-h-0 overflow-auto">
 							<Routes>
 								{user.is_student === 1 ? (
 									<>

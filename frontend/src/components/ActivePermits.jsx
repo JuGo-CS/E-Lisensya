@@ -71,9 +71,10 @@ const ActivePermits = ({ studentId }) => {
     // single modal instance for confirmation
     const cancelModal = showCancelModal ? (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-11/12 sm:w-96 shadow-xl">
-                <h2 className="font-black text-xl sm:text-2xl mb-3">Cancelling the permit</h2>
-                <p className="text-sm sm:text-base text-gray-700 mb-4">Do you wish to continue?</p>
+            <div className="bg-white rounded-xl p-6 w-11/12 sm:w-130 shadow-xl">
+                <h2 className="font-black text-xl sm:text-4xl mb-3 ">Cancelling the permit</h2>
+                <p className="text-md sm:text-2xl text-gray-700">Do you wish to continue?</p>
+                <p className="text-md sm:text-2xl text-red-700 -mt-2 mb-4"> This is irreversible!</p>
 
                 {cancelResult && (
                     <p className="mb-3 text-sm text-center">{cancelResult}</p>
@@ -82,7 +83,7 @@ const ActivePermits = ({ studentId }) => {
                 <div className="flex justify-between gap-3">
                     <button
                         onClick={() => { if (!isCancelling) setShowCancelModal(false); }}
-                        className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg py-2"
+                        className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg py-4 sm:text-2xl"
                     >
                         Close
                     </button>
@@ -116,7 +117,7 @@ const ActivePermits = ({ studentId }) => {
                                 setIsCancelling(false);
                             }
                         }}
-                        className="flex-1 bg-slate-700 hover:bg-slate-950 text-white rounded-lg py-2"
+                        className="sm:text-2xl flex-1 bg-slate-700 hover:bg-slate-950 text-white rounded-lg py-2"
                     >
                         {isCancelling ? 'Cancelling...' : 'Yes, continue'}
                     </button>
