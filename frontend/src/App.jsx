@@ -6,6 +6,7 @@ import PersonnelPermits from './pages/PersonnelPermits.jsx';
 import PersonnelRoommates from './pages/PersonnelRoommates.jsx';
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login.jsx';
+import Profile from './pages/Profile.jsx';
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -54,7 +55,7 @@ function App() {
 										<Route path="/roommates" element={<PersonnelRoommates id={user.personal_id} />} />
 									</>
 								)}
-								<Route path="/profile" element={<div className="p-4">Under Construction</div>} />
+								<Route path="/profile" element={<Profile />} />
 							</Routes>
 						</div> 
                     </>
