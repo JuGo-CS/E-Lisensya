@@ -8,6 +8,12 @@ const useFetch = (url) => {
     const [errorMes, setErrorMes] = useState(null);
     
     useEffect(() => {
+        if (!url) {
+            setData(null);
+            setIsPending(false);
+            setErrorMes(null);
+            return;
+        }
         
         // setTimeout(() => {
             fetch(url)

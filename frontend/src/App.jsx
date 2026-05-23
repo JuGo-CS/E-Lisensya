@@ -15,7 +15,7 @@ function App() {
 		try {
 			const raw = localStorage.getItem('user');
 			return raw ? JSON.parse(raw) : null;
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	});
@@ -55,7 +55,7 @@ function App() {
 										<Route path="/roommates" element={<PersonnelRoommates id={user.personal_id} />} />
 									</>
 								)}
-								<Route path="/profile" element={<Profile />} />
+								<Route path="/profile" element={<Profile onSignOut={() => setUser(null)} />} />
 							</Routes>
 						</div> 
                     </>

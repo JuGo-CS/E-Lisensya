@@ -4,7 +4,7 @@ import usePost from '../../../../database/usePost.jsx';
 import ConfirmModal from './ConfirmModal.jsx';
 import Toast from './Toast.jsx';
 
-const ProfileContainer = () => {
+const ProfileContainer = ({ onSignOut }) => {
     const raw = localStorage.getItem('user');
     const user = raw ? JSON.parse(raw) : null;
     const id = user?.personal_id;
@@ -126,11 +126,15 @@ const ProfileContainer = () => {
     if (!id) return <div className="p-6">Not logged in</div>;
     if (isPending) return <div className="p-6">Loading...</div>;
     if (errorMes) return <div className="p-6 text-red-600">Error: {errorMes}</div>;
+    // defensive: if data is still null (possible transient state), show loading instead of crashing
+    if (!data) return <div className="p-6">Loading...</div>;
 
     return (
         <div className="p-6 max-sm:mb-20 sm:mb-20">
             <div className="bg-gray-100 rounded-2xl p-6 border border-slate-900 overflow-x-hidden">
-                <h2 className="font-extrabold text-2xl sm:text-4xl mb-3 flex items-center justify-center">PROFILE</h2>
+                <div className="flex items-center justify-center mb-3">
+                    <h2 className="font-extrabold text-2xl sm:text-4xl">PROFILE</h2>
+                </div>
 
                 <div className="space-y-3">
                     <div>
@@ -236,6 +240,10 @@ const ProfileContainer = () => {
                     </div>
 
                     {feedback && <div className="text-sm text-gray-700 mt-2">{feedback}</div>}
+
+                    <div className="mt-4 flex justify-center">
+                        <button onClick={() => { localStorage.removeItem('user'); if (onSignOut) onSignOut(); else window.location.reload(); }} className="bg-red-600 text-white rounded px-4 py-2">Sign out</button>
+                    </div>
 
                     <ConfirmModal visible={confirmVisible} title={confirmTitle} message={confirmMessage} onCancel={()=>setConfirmVisible(false)} onConfirm={async ()=>{ setConfirmVisible(false); if (confirmActionRef.current) await confirmActionRef.current(); }} />
 

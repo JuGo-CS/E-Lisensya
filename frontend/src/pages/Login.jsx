@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLoginSuccess }) => {
     const [isPending, setIsPending] = useState(false);
     const [errorMes, setErrorMes] = useState(null);
+    const navigate = useNavigate();
 
     const handleLogIn = (e) => {
         e.preventDefault(); 
@@ -32,6 +34,8 @@ const Login = ({ onLoginSuccess }) => {
                         personal_id: Number(data.personal_id),
                         is_student: Number(data.is_student)
                     });
+                    // navigate to the Permits (root) page after successful login
+                    navigate('/', { replace: true });
                 } else {
                     throw Error("Invalid username or password.");
                 }
