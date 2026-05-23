@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import useFetch from '../../../database/useFetch.jsx';
 import usePost from '../../../database/usePost.jsx';
 
@@ -17,6 +17,10 @@ const Profile = () => {
     const [editingValue, setEditingValue] = useState('');
     const [addingValue, setAddingValue] = useState('');
     const [feedback, setFeedback] = useState(null);
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const confirmActionRef = useRef(null);
+    const [confirmTitle, setConfirmTitle] = useState('');
+    const [confirmMessage, setConfirmMessage] = useState('');
 
     const refresh = () => setRefreshKey(k => k + 1);
 
@@ -29,23 +33,34 @@ const Profile = () => {
         if (result.success) { setAddingValue(''); refresh(); }
     };
 
-    const handleDelete = async (contact) => {
+    const handleDelete = (contact) => {
         setFeedback(null);
-        const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/DeleteContact.php`, {
-            id, contact_number: contact
-        });
-        setFeedback(result.response?.message || result.error || 'Done');
-        if (result.success) refresh();
+        setConfirmTitle('Delete contact');
+        setConfirmMessage(`Are you sure you want to delete ${contact}? This cannot be undone.`);
+        confirmActionRef.current = async () => {
+            const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/DeleteContact.php`, {
+                id, contact_number: contact
+            });
+            setFeedback(result.response?.message || result.error || 'Done');
+            if (result.success) refresh();
+        };
+        setConfirmVisible(true);
     };
 
     const startEdit = (i, v) => { setEditingIndex(i); setEditingValue(v); setFeedback(null); };
     const cancelEdit = () => { setEditingIndex(null); setEditingValue(''); };
-    const saveEdit = async (oldContact) => {
-        const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateContact.php`, {
-            id, old_contact: oldContact, new_contact: editingValue
-        });
-        setFeedback(result.response?.message || result.error || 'Done');
-        if (result.success) { cancelEdit(); refresh(); }
+    const saveEdit = (oldContact) => {
+        setFeedback(null);
+        setConfirmTitle('Save contact change');
+        setConfirmMessage(`Are you sure you want to change ${oldContact} to ${editingValue}?`);
+        confirmActionRef.current = async () => {
+            const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateContact.php`, {
+                id, old_contact: oldContact, new_contact: editingValue
+            });
+            setFeedback(result.response?.message || result.error || 'Done');
+            if (result.success) { cancelEdit(); refresh(); }
+        };
+        setConfirmVisible(true);
     };
 
     // username/password editing
@@ -53,14 +68,21 @@ const Profile = () => {
     const [credValue, setCredValue] = useState('');
     const startEditCred = (field, value) => { setEditingCred(field); setCredValue(value || ''); setFeedback(null); };
     const cancelEditCred = () => { setEditingCred(null); setCredValue(''); };
-    const saveCred = async (field) => {
+    const saveCred = (field) => {
         setFeedback(null);
-        const body = { id };
-        if (field === 'username') body.username = credValue;
-        if (field === 'password') body.password = credValue;
-        const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateProfile.php`, body);
-        setFeedback(result.response?.message || result.error || 'Done');
-        if (result.success) { cancelEditCred(); refresh(); }
+        setConfirmTitle(field === 'username' ? 'Save username' : 'Change password');
+        setConfirmMessage(field === 'username'
+            ? `Continue to change username to "${credValue}"?`
+            : `Continue to change your password?`);
+        confirmActionRef.current = async () => {
+            const body = { id };
+            if (field === 'username') body.username = credValue;
+            if (field === 'password') body.password = credValue;
+            const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateProfile.php`, body);
+            setFeedback(result.response?.message || result.error || 'Done');
+            if (result.success) { cancelEditCred(); refresh(); }
+        };
+        setConfirmVisible(true);
     };
 
     if (!id) return <div className="p-6">Not logged in</div>;
@@ -69,8 +91,8 @@ const Profile = () => {
 
     return (
         <div className="p-6">
-            <div className="max-w-3xl mx-auto bg-orange-100 rounded-2xl p-6 border-2 border-slate-900">
-                <h2 className="font-extrabold text-2xl sm:text-4xl mb-3">Profile</h2>
+            <div className="bg-gray-100 rounded-2xl p-6 border border-slate-900 overflow-y-auto">
+                <h2 className="font-extrabold text-2xl sm:text-4xl mb-3 flex items-center justify-center">PROFILE</h2>
 
                 <div className="space-y-3">
                     <div>
@@ -170,6 +192,20 @@ const Profile = () => {
                     </div>
 
                     {feedback && <div className="text-sm text-gray-700 mt-2">{feedback}</div>}
+
+                    {confirmVisible && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black opacity-40" onClick={()=>setConfirmVisible(false)}></div>
+                            <div className="relative bg-white rounded-lg p-6 max-w-md w-full shadow-lg z-10">
+                                <h3 className="text-lg font-bold mb-2">{confirmTitle}</h3>
+                                <p className="text-sm text-gray-700 mb-4">{confirmMessage}</p>
+                                <div className="flex justify-end gap-2">
+                                    <button onClick={()=>setConfirmVisible(false)} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
+                                    <button onClick={async ()=>{ setConfirmVisible(false); if (confirmActionRef.current) await confirmActionRef.current(); }} className="bg-red-600 text-white rounded px-3 py-1">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
