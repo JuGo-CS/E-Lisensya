@@ -1,5 +1,5 @@
-import LoadScreen from './LoadScreen';
-import useFetch from '../../../database/useFetch.jsx';
+import LoadScreen from '../../LoadScreen';
+import useFetch from '../../../../../database/useFetch.jsx';
 
 // Renamed the component to match its file name role
 const InactivePermits = ({ studentId }) => {

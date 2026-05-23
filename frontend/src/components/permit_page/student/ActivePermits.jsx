@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import usePost from '../../../database/usePost.jsx';
-import LoadScreen from './LoadScreen';
-import useFetch from '../../../database/useFetch.jsx';
+import usePost from '../../../../../database/usePost.jsx';
+import LoadScreen from '../../LoadScreen';
+import useFetch from '../../../../../database/useFetch.jsx';
 import AddPermit from './AddPermit.jsx';
 
 const ActivePermits = ({ studentId }) => {

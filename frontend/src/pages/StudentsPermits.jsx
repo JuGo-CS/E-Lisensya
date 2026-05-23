@@ -1,5 +1,5 @@
-import ActivePermits from "../components/ActivePermits.jsx";
-import InactivePermits from "../components/InactivePermits.jsx";
+import ActivePermits from "../components/permit_page/student/ActivePermits.jsx";
+import InactivePermits from "../components//permit_page/student/InactivePermits.jsx";
 
 const StudentsPermits = ( {id} ) => {
     return ( 

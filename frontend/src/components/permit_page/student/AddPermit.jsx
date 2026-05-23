@@ -1,7 +1,7 @@
 
 
 import { useState, useMemo } from 'react';
-import usePost from '../../../database/usePost.jsx';
+import usePost from '../../../../../database/usePost.jsx';
 
 const AddPermit = ({ id, onFiled }) => {
     const [showModal, setShowModal] = useState(false);
