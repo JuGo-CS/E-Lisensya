@@ -21,15 +21,35 @@ const Profile = () => {
     const confirmActionRef = useRef(null);
     const [confirmTitle, setConfirmTitle] = useState('');
     const [confirmMessage, setConfirmMessage] = useState('');
+    const [toasts, setToasts] = useState([]);
+    const toastIdRef = useRef(0);
+
+    const addToast = (message, type = 'info') => {
+        const id = ++toastIdRef.current;
+        setToasts(t => [...t, { id, message, type }]);
+        setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3500);
+    };
+
+    const isNonEmptyString = (s) => typeof s === 'string' && s.trim().length > 0;
+    const isValidContact = (s) => typeof s === 'string' && /^\d{11}$/.test(s);
 
     const refresh = () => setRefreshKey(k => k + 1);
 
     const handleAdd = async () => {
         setFeedback(null);
+        if (!isValidContact(addingValue)) {
+            const err = 'Contact must be exactly 11 digits.';
+            setFeedback(err);
+            addToast(err, 'error');
+            return;
+        }
+
         const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/AddContact.php`, {
             id, contact_number: addingValue
         });
-        setFeedback(result.response?.message || result.error || 'Done');
+        const msg = result.response?.message || result.error || (result.success ? 'Added' : 'Error');
+        setFeedback(msg);
+        addToast(msg, result.success ? 'success' : 'error');
         if (result.success) { setAddingValue(''); refresh(); }
     };
 
@@ -41,7 +61,9 @@ const Profile = () => {
             const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/DeleteContact.php`, {
                 id, contact_number: contact
             });
-            setFeedback(result.response?.message || result.error || 'Done');
+            const msg = result.response?.message || result.error || (result.success ? 'Deleted' : 'Error');
+            setFeedback(msg);
+            addToast(msg, result.success ? 'success' : 'error');
             if (result.success) refresh();
         };
         setConfirmVisible(true);
@@ -51,35 +73,49 @@ const Profile = () => {
     const cancelEdit = () => { setEditingIndex(null); setEditingValue(''); };
     const saveEdit = (oldContact) => {
         setFeedback(null);
+        if (!isValidContact(editingValue)) {
+            const err = 'Contact must be exactly 11 digits.';
+            setFeedback(err);
+            addToast(err, 'error');
+            return;
+        }
         setConfirmTitle('Save contact change');
         setConfirmMessage(`Are you sure you want to change ${oldContact} to ${editingValue}?`);
         confirmActionRef.current = async () => {
             const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateContact.php`, {
                 id, old_contact: oldContact, new_contact: editingValue
             });
-            setFeedback(result.response?.message || result.error || 'Done');
+            const msg = result.response?.message || result.error || (result.success ? 'Updated' : 'Error');
+            setFeedback(msg);
+            addToast(msg, result.success ? 'success' : 'error');
             if (result.success) { cancelEdit(); refresh(); }
         };
         setConfirmVisible(true);
-    };
+        };
 
-    // username/password editing
+    // username/password editing controls
     const [editingCred, setEditingCred] = useState(null); // 'username' | 'password' | null
     const [credValue, setCredValue] = useState('');
     const startEditCred = (field, value) => { setEditingCred(field); setCredValue(value || ''); setFeedback(null); };
     const cancelEditCred = () => { setEditingCred(null); setCredValue(''); };
     const saveCred = (field) => {
         setFeedback(null);
+        if (!isNonEmptyString(credValue)) {
+            const err = field === 'username' ? 'Username cannot be empty.' : 'Password cannot be empty.';
+            setFeedback(err);
+            addToast(err, 'error');
+            return;
+        }
         setConfirmTitle(field === 'username' ? 'Save username' : 'Change password');
-        setConfirmMessage(field === 'username'
-            ? `Continue to change username to "${credValue}"?`
-            : `Continue to change your password?`);
+        setConfirmMessage(field === 'username' ? `Change username to "${credValue}"?` : `Change your password?`);
         confirmActionRef.current = async () => {
             const body = { id };
             if (field === 'username') body.username = credValue;
             if (field === 'password') body.password = credValue;
             const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/UpdateProfile.php`, body);
-            setFeedback(result.response?.message || result.error || 'Done');
+            const msg = result.response?.message || result.error || (result.success ? 'Saved' : 'Error');
+            setFeedback(msg);
+            addToast(msg, result.success ? 'success' : 'error');
             if (result.success) { cancelEditCred(); refresh(); }
         };
         setConfirmVisible(true);
@@ -210,6 +246,17 @@ const Profile = () => {
                                     <button onClick={async ()=>{ setConfirmVisible(false); if (confirmActionRef.current) await confirmActionRef.current(); }} className="bg-red-600 text-white rounded px-3 py-1">Confirm</button>
                                 </div>
                             </div>
+                        </div>
+                    )}
+                    {toasts.length > 0 && (
+                        <div className="fixed top-4 right-4 z-50 flex justify-center gap-2">
+                            {toasts.map(t => (
+                                <div key={t.id} className={
+                                    `max-w-xs w-full rounded px-4 py-2 text-sm shadow ${t.type === 'success' ? 'bg-green-600 text-white' : t.type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'}`
+                                }>
+                                    {t.message}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
