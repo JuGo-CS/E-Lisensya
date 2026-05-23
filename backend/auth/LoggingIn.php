@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 include '../config/DBConnector.php';
 
+
 $username = isset($_GET['userName']) ? $_GET['userName'] : null;
 $password = isset($_GET['password']) ? $_GET['password'] : null;
 

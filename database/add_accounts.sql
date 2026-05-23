@@ -1,8 +1,8 @@
-ALTER TABLE `person` 
-ADD COLUMN `username` VARCHAR(255) NULL,
-ADD COLUMN `password` VARCHAR(255) NULL,
-ADD COLUMN `is_student` BOOLEAN NOT NULL DEFAULT FALSE;
-
+-- ALTER TABLE `person` 
+-- ADD COLUMN `username` VARCHAR(255) NULL,
+-- ADD COLUMN `password` VARCHAR(255) NULL,
+-- ADD COLUMN `is_student` BOOLEAN NOT NULL DEFAULT FALSE;
+DROP TRIGGER IF EXISTS `before_person_insert`;
 DELIMITER $$
 
 CREATE TRIGGER `before_person_insert`
