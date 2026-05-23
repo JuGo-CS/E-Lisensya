@@ -90,8 +90,8 @@ const Profile = () => {
     if (errorMes) return <div className="p-6 text-red-600">Error: {errorMes}</div>;
 
     return (
-        <div className="p-6">
-            <div className="bg-gray-100 rounded-2xl p-6 border border-slate-900 overflow-y-auto">
+        <div className="p-6 max-sm:mb-20 sm:mb-20">
+            <div className="bg-gray-100 rounded-2xl p-6 border border-slate-900 overflow-x-hidden">
                 <h2 className="font-extrabold text-2xl sm:text-4xl mb-3 flex items-center justify-center">PROFILE</h2>
 
                 <div className="space-y-3">
@@ -106,18 +106,20 @@ const Profile = () => {
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <div className="p-4 bg-white rounded shadow-sm">
+                        <div className="p-4 bg-white rounded shadow-sm min-w-0">
                             <div className="text-sm text-gray-500">Username</div>
                             {editingCred === 'username' ? (
-                                <div className="mt-2 flex gap-2">
-                                    <input className="border px-2 py-1 flex-1" value={credValue} onChange={e=>setCredValue(e.target.value)} />
-                                    <button onClick={()=>saveCred('username')} className="bg-slate-700 text-white rounded px-3 py-1">Save</button>
-                                    <button onClick={cancelEditCred} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
+                                <div className="mt-2 w-full flex flex-col sm:flex-row gap-2 items-stretch">
+                                    <input className="border px-2 py-1 flex-1 min-w-0 w-full" value={credValue} onChange={e=>setCredValue(e.target.value)} />
+                                    <div className="flex gap-2 mt-2 sm:mt-0 sm:ml-2 sm:flex-none">
+                                        <button onClick={()=>saveCred('username')} className="bg-slate-700 text-white rounded px-3 py-1 w-full sm:w-auto">Save</button>
+                                        <button onClick={cancelEditCred} className="bg-gray-200 rounded px-3 py-1 w-full sm:w-auto">Cancel</button>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="mt-2 flex items-center">
-                                    <div className="font-bold text-lg">{data.username || 'N/A'}</div>
-                                    <button onClick={()=>startEditCred('username', data.username)} className="ml-auto bg-yellow-300 rounded px-2 py-1">Edit</button>
+                                <div className="mt-2 flex items-center gap-2 min-w-0">
+                                    <div className="font-bold text-lg min-w-0 truncate">{data.username || 'N/A'}</div>
+                                    <button onClick={()=>startEditCred('username', data.username)} className="ml-auto bg-yellow-300 rounded px-2 py-1 flex-none">Edit</button>
                                 </div>
                             )}
                         </div>
@@ -125,15 +127,17 @@ const Profile = () => {
                         <div className="p-4 bg-white rounded shadow-sm">
                             <div className="text-sm text-gray-500">Password</div>
                             {editingCred === 'password' ? (
-                                <div className="mt-2 flex gap-2">
-                                    <input type="password" className="border px-2 py-1 flex-1" value={credValue} onChange={e=>setCredValue(e.target.value)} />
-                                    <button onClick={()=>saveCred('password')} className="bg-slate-700 text-white rounded px-3 py-1">Save</button>
-                                    <button onClick={cancelEditCred} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
+                                <div className="mt-2 w-full flex flex-col sm:flex-row gap-2 items-stretch">
+                                    <input type="password" className="border px-2 py-1 flex-1 min-w-0 w-full" value={credValue} onChange={e=>setCredValue(e.target.value)} />
+                                    <div className="flex gap-2 mt-2 sm:mt-0 sm:ml-2 sm:flex-none">
+                                        <button onClick={()=>saveCred('password')} className="bg-slate-700 text-white rounded px-3 py-1 w-full sm:w-auto">Save</button>
+                                        <button onClick={cancelEditCred} className="bg-gray-200 rounded px-3 py-1 w-full sm:w-auto">Cancel</button>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="mt-2 flex items-center">
-                                    <div className="font-bold text-lg">{data.password ? '••••••••' : 'N/A'}</div>
-                                    <button onClick={()=>startEditCred('password', '')} className="ml-auto bg-yellow-300 rounded px-2 py-1">Change</button>
+                                <div className="mt-2 flex items-center gap-2 min-w-0">
+                                    <div className="font-bold text-lg min-w-0 truncate">{data.password ? '••••••••' : 'N/A'}</div>
+                                    <button onClick={()=>startEditCred('password', '')} className="ml-auto bg-yellow-300 rounded px-2 py-1 flex-none">Change</button>
                                 </div>
                             )}
                         </div>
@@ -165,28 +169,30 @@ const Profile = () => {
                         <div className="text-sm sm:text-lg text-gray-700">Contact numbers</div>
                         <div className="space-y-2 mt-2 bg-white p-3 rounded shadow-sm">
                             {(data.contacts || []).map((c, i) => (
-                                <div key={i} className="flex items-center gap-3 py-2 border-b last:border-b-0">
+                                <div key={i} className="flex items-center gap-3 py-2 border-b last:border-b-0 min-w-0">
                                     {editingIndex === i ? (
-                                        <>
-                                            <input value={editingValue} onChange={e=>setEditingValue(e.target.value)} className="border rounded px-2 py-1 flex-1" />
-                                            <button onClick={()=>saveEdit(c)} className="bg-slate-700 text-white rounded px-3 py-1">Save</button>
-                                            <button onClick={cancelEdit} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="font-bold">{c}</div>
-                                            <div className="ml-auto flex gap-2">
-                                                <button onClick={()=>startEdit(i,c)} className="bg-yellow-400 rounded px-2 py-1">Edit</button>
-                                                <button onClick={()=>handleDelete(c)} className="bg-red-500 text-white rounded px-2 py-1">Delete</button>
-                                            </div>
-                                        </>
-                                    )}
+                                                <div className="w-full flex flex-col sm:flex-row gap-2 items-stretch min-w-0">
+                                                    <input value={editingValue} onChange={e=>setEditingValue(e.target.value)} className="border rounded px-2 py-1 flex-1 min-w-0 w-full" />
+                                                    <div className="flex gap-2 mt-2 sm:mt-0 sm:ml-2 sm:flex-none">
+                                                        <button onClick={()=>saveEdit(c)} className="bg-slate-700 text-white rounded px-3 py-1 w-full sm:w-auto">Save</button>
+                                                        <button onClick={cancelEdit} className="bg-gray-200 rounded px-3 py-1 w-full sm:w-auto">Cancel</button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="font-bold min-w-0 truncate">{c}</div>
+                                                    <div className="ml-auto flex gap-2">
+                                                        <button onClick={()=>startEdit(i,c)} className="bg-yellow-400 rounded px-2 py-1 flex-none">Edit</button>
+                                                        <button onClick={()=>handleDelete(c)} className="bg-red-500 text-white rounded px-2 py-1 flex-none">Delete</button>
+                                                    </div>
+                                                </>
+                                            )}
                                 </div>
                             ))}
 
                             <div className="mt-3 flex gap-2">
-                                <input placeholder="New contact" value={addingValue} onChange={e=>setAddingValue(e.target.value)} className="border rounded px-2 py-1 flex-1" />
-                                <button onClick={handleAdd} className="bg-green-600 text-white rounded px-3 py-1">Add</button>
+                                <input placeholder="New contact" value={addingValue} onChange={e=>setAddingValue(e.target.value)} className="border rounded px-2 py-1 flex-1 min-w-0" />
+                                <button onClick={handleAdd} className="bg-green-600 text-white rounded px-3 py-1 flex-none">Add</button>
                             </div>
                         </div>
                     </div>
