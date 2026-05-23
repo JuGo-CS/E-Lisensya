@@ -21,13 +21,14 @@ const Profile = () => {
     const confirmActionRef = useRef(null);
     const [confirmTitle, setConfirmTitle] = useState('');
     const [confirmMessage, setConfirmMessage] = useState('');
-    const [toasts, setToasts] = useState([]);
-    const toastIdRef = useRef(0);
+    const [toast, setToast] = useState(null);
+    const toastTimeoutRef = useRef(null);
 
     const addToast = (message, type = 'info') => {
-        const id = ++toastIdRef.current;
-        setToasts(t => [...t, { id, message, type }]);
-        setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3500);
+        // only one toast at a time
+        if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+        setToast({ message, type });
+        toastTimeoutRef.current = setTimeout(() => setToast(null), 3500);
     };
 
     const isNonEmptyString = (s) => typeof s === 'string' && s.trim().length > 0;
@@ -218,7 +219,7 @@ const Profile = () => {
                                                 <>
                                                     <div className="font-bold min-w-0 truncate">{c}</div>
                                                     <div className="ml-auto flex gap-2">
-                                                        <button onClick={()=>startEdit(i,c)} className="bg-yellow-400 rounded px-2 py-1 flex-none">Edit</button>
+                                                        <button onClick={()=>startEdit(i,c)} className="bg-yellow-300 rounded px-2 py-1 flex-none">Edit</button>
                                                         <button onClick={()=>handleDelete(c)} className="bg-red-500 text-white rounded px-2 py-1 flex-none">Delete</button>
                                                     </div>
                                                 </>
@@ -243,20 +244,18 @@ const Profile = () => {
                                 <p className="text-sm text-gray-700 mb-4">{confirmMessage}</p>
                                 <div className="flex justify-end gap-2">
                                     <button onClick={()=>setConfirmVisible(false)} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
-                                    <button onClick={async ()=>{ setConfirmVisible(false); if (confirmActionRef.current) await confirmActionRef.current(); }} className="bg-red-600 text-white rounded px-3 py-1">Confirm</button>
+                                    <button onClick={async ()=>{ setConfirmVisible(false); if (confirmActionRef.current) await confirmActionRef.current(); }} className="bg-green-600 text-white rounded px-3 py-1">Confirm</button>
                                 </div>
                             </div>
                         </div>
                     )}
-                    {toasts.length > 0 && (
-                        <div className="fixed top-4 right-4 z-50 flex justify-center gap-2">
-                            {toasts.map(t => (
-                                <div key={t.id} className={
-                                    `max-w-xs w-full rounded px-4 py-2 text-sm shadow ${t.type === 'success' ? 'bg-green-600 text-white' : t.type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'}`
-                                }>
-                                    {t.message}
-                                </div>
-                            ))}
+                    {toast && (
+                        <div className="fixed top-4 inset-x-0 flex justify-center z-50 px-4">
+                            <div className={
+                                `max-w-md w-max rounded px-4 py-2 text-sm shadow text-center ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'}`
+                            }>
+                                {toast.message}
+                            </div>
                         </div>
                     )}
                 </div>
