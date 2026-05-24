@@ -2,10 +2,18 @@
 // DESCRIPTION: 
 //     this handles getting pending permits
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
+include_once '../config/cors.php';
 
-include '../config/DBConnector.php';
+//  restrict allowed method
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405); 
+    echo json_encode([
+        "success" => false, "message" => "invalid method. endpoint requires GET"
+    ]);
+    exit;
+}
+
+include_once '../config/DBConnector.php';
 
 
 $query = "
