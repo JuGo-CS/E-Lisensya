@@ -20,9 +20,9 @@ include_once '../auth/PersonnelMiddleware.php';
 
 // get raw data
 $data = json_decode(file_get_contents("php://input"), true);
+// check if permit id is passed
 $permit_id = isset($data['permit_id']) ? (int)$data['permit_id'] : null;
 
-// check if permit id is passed
 if (!$permit_id) {
     echo json_encode(["success" => false, "message" => "incomplete arguments"]);
     $conn->close();
