@@ -10,7 +10,7 @@ const ConfirmModal = ({ visible, title, message, onCancel, onConfirm }) => {
                 <p className="text-sm text-gray-700 mb-4">{message}</p>
                 <div className="flex justify-end gap-2">
                     <button onClick={onCancel} className="bg-gray-200 rounded px-3 py-1">Cancel</button>
-                    <button onClick={async () => { await onConfirm(); }} className="bg-red-600 text-white rounded px-3 py-1">Confirm</button>
+                    <button onClick={async () => { await onConfirm(); }} className="bg-green-600 text-white rounded px-3 py-1">Confirm</button>
                 </div>
             </div>
         </div>
