@@ -20,6 +20,8 @@ include_once '../auth/PersonnelMiddleware.php';
 
 // get raw data
 $data = json_decode(file_get_contents("php://input"), true);
+// verify personnel access and get the verified personnel id
+$verified_personal_id = verifyPersonnelAccess($conn, $data);
 // check if permit id is passed
 $permit_id = isset($data['permit_id']) ? (int)$data['permit_id'] : null;
 
@@ -56,7 +58,7 @@ if ($permit_status !== 'PENDING') {
 
 // update status and bind the person who handled it to that permit
 $upd = $conn->prepare("UPDATE permit SET status = 'REJECTED', personnel_id = ? WHERE permit_id = ?");
-$upd->bind_param("ii", $personal_id, $permit_id);
+$upd->bind_param("ii", $verified_personal_id, $permit_id);
 
 if ($upd->execute() && $upd->affected_rows > 0) {
     echo json_encode(["success" => true, "message" => "permit rejected successfully"]);

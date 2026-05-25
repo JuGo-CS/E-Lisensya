@@ -33,7 +33,7 @@ if (!$permit_id) {
 
 $stmt = $conn->prepare("
     UPDATE permit 
-    SET status = 'APPROVED', personnel_id = ? 
+    SET status = 'COMPLETED', personnel_id = ? 
     WHERE permit_id = ? AND status = 'PENDING'
 ");
 
