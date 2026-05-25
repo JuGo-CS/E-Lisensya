@@ -49,13 +49,27 @@ if ($id) {
             $full_valid_datetime = "Until Return";
         }
 
+        // Format arrival time if exists
+        $arrival_time = null;
+        $raw_arrival_date = $permit['arrival_date'] ?? null;
+        $raw_arrival_time = $permit['arrival_time'] ?? null;
+        if ($raw_arrival_date && $raw_arrival_time && $raw_arrival_time !== '00:00:00') {
+            $arrival_dt = strtotime($raw_arrival_date . ' ' . $raw_arrival_time);
+            if ($arrival_dt) {
+                $arrival_ampm = date("g:i a", $arrival_dt);
+                $arrival_date_fmt = date("n/j/Y", strtotime($raw_arrival_date));
+                $arrival_time = $arrival_ampm . ', ' . $arrival_date_fmt;
+            }
+        }
+
         echo json_encode([
             "permit_id" => (int)$permit["permit_id"],
             "student_id" => (int)$permit["student_id"],
             "permit_name" => $permit["permit_name"],
             "status" => $permit["status"],
             "date_created" => $full_created_date,
-            "valid_until" => $full_valid_datetime
+            "valid_until" => $full_valid_datetime,
+            "arrival_time" => $arrival_time
         ]);
     } 
     else {
