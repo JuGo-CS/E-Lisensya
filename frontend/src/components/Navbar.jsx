@@ -29,6 +29,19 @@ const Navbar = ({ isStudent }) => {
                 {navText}
             </NavLink>
 
+            {isStudent !== 1 && (
+                <NavLink 
+                    to="/archive" 
+                    className={({ isActive }) => 
+                        isActive 
+                            ? "font-black text-2xl sm:text-3xl transition-all scale-105 text-slate-900 underline" 
+                            : "font-medium text-base sm:text-2xl text-slate-600 hover:text-slate-900 transition-colors"
+                    }
+                >
+                    Archive
+                </NavLink>
+            )}
+
             <NavLink 
                 to="/profile" 
                 className={({ isActive }) => 

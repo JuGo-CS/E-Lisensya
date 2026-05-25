@@ -4,6 +4,7 @@ import StudentsPermits from './pages/StudentsPermits.jsx';
 import StudentRoommates from './pages/StudentRoommates.jsx';
 import PersonnelPermits from './pages/PersonnelPermits.jsx'; 
 import PersonnelRoommates from './pages/PersonnelRoommates.jsx';
+import PersonnelArchive from './pages/PersonnelArchive.jsx';
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Profile from './pages/Profile.jsx';
@@ -53,6 +54,7 @@ function App() {
 									<>
 										<Route path="/" element={<PersonnelPermits id={user.personal_id} />} />
 										<Route path="/roommates" element={<PersonnelRoommates id={user.personal_id} />} />
+									<Route path="/archive" element={<PersonnelArchive />} />
 									</>
 								)}
 								<Route path="/profile" element={<Profile onSignOut={() => setUser(null)} />} />

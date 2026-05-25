@@ -57,7 +57,7 @@ const ActivePermits = ({ studentId }) => {
         );
     } else {
         mainContent = (
-            <div className='h-75 sm:h-90 bg-orange-100 rounded-2xl border-2 border-slate-900 mx-4 sm:mx-7'>
+            <div className={`${data?.status === 'ACTIVE' ? 'h-61 sm:h-73' : 'h-75 sm:h-90'} bg-orange-100 rounded-2xl border-2 border-slate-900 mx-4 sm:mx-7`}>
                 <div className="font-black ">
                     <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
                         <p className="pl-2">Permit type</p>
