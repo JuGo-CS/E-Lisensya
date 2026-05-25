@@ -121,6 +121,14 @@ const ActivePendingPermits = ({ personnelId }) => {
                                     <p className="pl-2">Time created</p>
                                     <p className="-ml-5 sm:-ml-20"> - {permit.date_created}</p>
                                 </div>
+
+                                <hr className="border-t-2 border-slate-900" />
+
+                                {/* Valid till */}
+                                <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
+                                    <p className="pl-2">Valid till</p>
+                                    <p className="-ml-5 sm:-ml-20"> - {permit.valid_until}</p>
+                                </div>
                             </div>
 
                             {/* Action buttons */}
@@ -181,7 +189,7 @@ const ActivePendingPermits = ({ personnelId }) => {
                                     ? `Cancel ${modal.permit.student_name}'s active ${modal.permit.permit_name} permit?`
                                     : `Reject ${modal.permit.student_name}'s ${modal.permit.permit_name} permit?`}
                         </p>
-                        <p className="text-md sm:text-2xl text-red-700 -mt-2 mb-4"> This is irreversible!</p>
+                        <p className="text-md sm:text-2xl text-gray-500 -mt-2 mb-4"> You can change this decision later if needed.</p>
 
                         {actionResult && (
                             <p className={`mb-3 text-sm text-center ${actionResult.ok ? 'text-green-600' : 'text-red-600'}`}>

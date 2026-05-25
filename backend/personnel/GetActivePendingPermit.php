@@ -23,6 +23,8 @@ $query = "
         p.date_created, 
         p.time_created,
         p.status,
+        p.arrival_date,
+        p.arrival_time,
         per.first_name,
         per.last_name,
         s.room_number,
@@ -48,10 +50,45 @@ while ($row = $result->fetch_assoc()) {
     $date_created_fmt = date("n/j/Y", strtotime($row['date_created']));
     $full_created_date = $time_created_ampm . ', ' . $date_created_fmt;
 
+    // Compute valid until based on permit name (same logic as student's ActivePermits.php)
+    $valid_until_date = null;
+    $valid_until_time = null;
+
+    if ($row["permit_name"] == "Late") {
+        $valid_until_date = date('Y-m-d', strtotime($row["date_created"]));
+        $valid_until_time = "23:00:00";
+    } else if ($row["permit_name"] == "Overnight") {
+        $date_object = new DateTime($row["date_created"]);
+        $date_object->modify('+1 day');
+        $valid_until_date = $date_object->format('Y-m-d');
+        $valid_until_time = "23:00:00";
+    }
+
+    $full_valid_datetime = "";
+    if ($valid_until_date && $valid_until_time) {
+        $valid_until_dt = strtotime($valid_until_date . ' ' . $valid_until_time);
+        $valid_until_ampm = date("g:i a", $valid_until_dt);
+        $valid_until_date_fmt = date("n/j/Y", strtotime($valid_until_date));
+        $full_valid_datetime = $valid_until_ampm . ', ' . $valid_until_date_fmt;
+    } else {
+        $full_valid_datetime = "Until Return";
+    }
+
+    // Format arrival time if exists
+    $arrival_time = null;
+    if ($row['arrival_date'] && $row['arrival_time']) {
+        $arrival_dt = strtotime($row['arrival_date'] . ' ' . $row['arrival_time']);
+        $arrival_ampm = date("g:i a", $arrival_dt);
+        $arrival_date_fmt = date("n/j/Y", strtotime($row['arrival_date']));
+        $arrival_time = $arrival_ampm . ', ' . $arrival_date_fmt;
+    }
+
     $pending_permits[] = [
         'permit_id' => (int)$row['permit_id'],
         'permit_name' => $row['permit_name'],
         'date_created' => $full_created_date,
+        'valid_until' => $full_valid_datetime,
+        'arrival_time' => $arrival_time,
         'status' => $row['status'],
         'student_name'=> trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
         'room_number'=> (int)$row['room_number'],
