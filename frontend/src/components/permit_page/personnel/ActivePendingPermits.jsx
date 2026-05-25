@@ -78,7 +78,7 @@ const ActivePendingPermits = ({ personnelId }) => {
     };
 
     const statusColors = {
-        ACTIVE: 'bg-orange-100',
+        ACTIVE: 'bg-gray-100',
         PENDING: 'bg-yellow-100',
     };
 
@@ -129,6 +129,20 @@ const ActivePendingPermits = ({ personnelId }) => {
                                     <p className="pl-2">Valid till</p>
                                     <p className="-ml-5 sm:-ml-20"> - {permit.valid_until}</p>
                                 </div>
+
+                                {!isActive && (
+                                    <>
+                                        <hr className="border-t-2 border-slate-900" />
+                                        <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
+                                            <p className="pl-2">Log Return</p>
+                                            <p className="-ml-5 sm:-ml-20">
+                                                - {permit.arrival_time
+                                                    ? permit.arrival_time
+                                                    : <span className="italic text-gray-500">Awaiting return</span>}
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* Action buttons */}

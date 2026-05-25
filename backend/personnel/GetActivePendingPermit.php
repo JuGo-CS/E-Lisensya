@@ -76,19 +76,26 @@ while ($row = $result->fetch_assoc()) {
 
     // Format arrival time if exists
     $arrival_time = null;
-    if ($row['arrival_date'] && $row['arrival_time']) {
-        $arrival_dt = strtotime($row['arrival_date'] . ' ' . $row['arrival_time']);
-        $arrival_ampm = date("g:i a", $arrival_dt);
-        $arrival_date_fmt = date("n/j/Y", strtotime($row['arrival_date']));
-        $arrival_time = $arrival_ampm . ', ' . $arrival_date_fmt;
+    $raw_arrival_date = $row['arrival_date'] ?? null;
+    $raw_arrival_time = $row['arrival_time'] ?? null;
+    if ($raw_arrival_date && $raw_arrival_time && $raw_arrival_time !== '00:00:00') {
+        $arrival_dt = strtotime($raw_arrival_date . ' ' . $raw_arrival_time);
+        if ($arrival_dt) {
+            $arrival_ampm = date("g:i a", $arrival_dt);
+            $arrival_date_fmt = date("n/j/Y", strtotime($raw_arrival_date));
+            $arrival_time = $arrival_ampm . ', ' . $arrival_date_fmt;
+        }
     }
+
+    // Ensure arrival_time is explicitly null (not empty string) when there's no return
+    $final_arrival_time = ($arrival_time !== null) ? $arrival_time : null;
 
     $pending_permits[] = [
         'permit_id' => (int)$row['permit_id'],
         'permit_name' => $row['permit_name'],
         'date_created' => $full_created_date,
         'valid_until' => $full_valid_datetime,
-        'arrival_time' => $arrival_time,
+        'arrival_time' => $final_arrival_time,
         'status' => $row['status'],
         'student_name'=> trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
         'room_number'=> (int)$row['room_number'],
