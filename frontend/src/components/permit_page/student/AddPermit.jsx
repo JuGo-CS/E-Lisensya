@@ -15,7 +15,7 @@ const AddPermit = ({ id, onFiled }) => {
 
     // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
     // don't forget to 'uncomment' man sa dalum ni nga part + ang ara sa AddPermit.jsx
-    // const allowedNow = hour >= 6 && hour <= 18;
+    // const allowedNow = hour >= 6 && hour < 18;
     const allowedNow = 1;
 
     // compute preview of valid-until based on permitType and device time
@@ -52,7 +52,7 @@ const AddPermit = ({ id, onFiled }) => {
         const hr = nowCheck.getHours();
 
         // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
-        // if (hr < 6 || hr > 18) {
+        // if (hr < 6 || hr >= 18) {
         //     setError('You can only file a permit between 6:00 AM and 6:00 PM.');
         //     return;
         // }

@@ -30,7 +30,7 @@ if (!$student_id || !$permit_name) {
 
 // server-side time window check (06:00 - 18:00)
 $serverHour = (int)date('H');
-$serverOutside = ($serverHour < 6 || $serverHour > 18);
+$serverOutside = ($serverHour < 6 || $serverHour >= 18);
 
 
 // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
