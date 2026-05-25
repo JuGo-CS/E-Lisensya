@@ -34,16 +34,29 @@ const ActivePendingPermits = ({ personnelId }) => {
         setProcessing(true);
         setActionResult(null);
 
-        const isConfirm = modal.type === 'confirm';
-        const endpoint = isConfirm
-            ? `http://${host}/sample/E-Lisensya/backend/personnel/ApprovePermit.php`
-            : `http://${host}/sample/E-Lisensya/backend/personnel/RejectPermit.php`;
+        let endpoint;
+        let body;
 
-        try {
-            const result = await post(endpoint, {
+        if (modal.type === 'cancel') {
+            endpoint = `http://${host}/sample/E-Lisensya/backend/student/CancelPermit.php`;
+            body = {
+                permit_id: modal.permit.permit_id,
+                actor_id: personnelId,
+                actor_is_student: 0,
+            };
+        } else {
+            const isConfirm = modal.type === 'confirm';
+            endpoint = isConfirm
+                ? `http://${host}/sample/E-Lisensya/backend/personnel/ApprovePermit.php`
+                : `http://${host}/sample/E-Lisensya/backend/personnel/RejectPermit.php`;
+            body = {
                 permit_id: modal.permit.permit_id,
                 personal_id: personnelId,
-            });
+            };
+        }
+
+        try {
+            const result = await post(endpoint, body);
 
             const msg = result.response?.message || result.error?.message || result.error || JSON.stringify(result.response || result.error || {});
 
@@ -110,10 +123,18 @@ const ActivePendingPermits = ({ personnelId }) => {
                                 </div>
                             </div>
 
-                            {/* Action buttons — only for PENDING permits */}
+                            {/* Action buttons */}
                             {isActive ? (
-                                <div className='flex items-center justify-center mx-auto font-extrabold italic text-xl sm:text-3xl h-13 sm:h-18 w-73 sm:w-120 item bg-gray-300 text-gray-600 rounded-xl mb-4'>
-                                    <p>Student is out on permit...</p>
+                                <div className='mx-auto font-extrabold text-xl sm:text-3xl h-13 sm:h-18 w-73 sm:w-120 item mb-4'>
+                                    <button
+                                        onClick={() => {
+                                            setActionResult(null);
+                                            setModal({ type: 'cancel', permit });
+                                        }}
+                                        className="flex items-center justify-center w-full text-gray-800 bg-gray-200 hover:bg-red-700 hover:text-white rounded-xl cursor-pointer transition-all h-full"
+                                    >
+                                        Cancel
+                                    </button>
                                 </div>
                             ) : (
                                 <div className='mx-auto font-extrabold text-xl sm:text-3xl h-13 sm:h-18 grid grid-cols-2 gap-4 sm:gap-8 w-73 sm:w-120 item mb-4'>
@@ -142,17 +163,23 @@ const ActivePendingPermits = ({ personnelId }) => {
                 })}
             </div>
 
-            {/* Confirmation / Deny Modal */}
+            {/* Confirmation / Deny / Cancel Modal */}
             {modal && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-6 w-11/12 sm:w-130 shadow-xl">
                         <h2 className="font-black text-xl sm:text-4xl mb-3">
-                            {modal.type === 'confirm' ? 'Confirming permit' : 'Denying permit'}
+                            {modal.type === 'confirm'
+                                ? 'Confirming permit'
+                                : modal.type === 'cancel'
+                                    ? 'Cancelling permit'
+                                    : 'Denying permit'}
                         </h2>
                         <p className="text-md sm:text-2xl text-gray-700">
                             {modal.type === 'confirm'
                                 ? `Approve ${modal.permit.student_name}'s ${modal.permit.permit_name} permit?`
-                                : `Reject ${modal.permit.student_name}'s ${modal.permit.permit_name} permit?`}
+                                : modal.type === 'cancel'
+                                    ? `Cancel ${modal.permit.student_name}'s active ${modal.permit.permit_name} permit?`
+                                    : `Reject ${modal.permit.student_name}'s ${modal.permit.permit_name} permit?`}
                         </p>
                         <p className="text-md sm:text-2xl text-red-700 -mt-2 mb-4"> This is irreversible!</p>
 
@@ -184,7 +211,9 @@ const ActivePendingPermits = ({ personnelId }) => {
                                     ? 'Processing...'
                                     : modal.type === 'confirm'
                                         ? 'Yes, confirm'
-                                        : 'Yes, deny'}
+                                        : modal.type === 'cancel'
+                                            ? 'Yes, cancel'
+                                            : 'Yes, deny'}
                             </button>
                         </div>
                     </div>
