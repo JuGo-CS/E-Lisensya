@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import useFetch from '../../../../../database/useFetch.jsx';
 import LoadScreen from '../../LoadScreen';
 
-const ProcessedPermits = () => {
+const ProcessedPermits = ({ refreshKey = 0 }) => {
     const host = window.location.hostname;
-    const [refreshKey] = useState(0);
-    const url = `http://${host}/sample/E-Lisensya/backend/personnel/GetProcessedPermits.php?r=${refreshKey}`;
+    const url = `http://${host}/sample/E-Lisensya/backend/personnel/GetDailyProcessedPermits.php?r=${refreshKey}`;
 
     const { data, isPending, errorMes } = useFetch(url);
 

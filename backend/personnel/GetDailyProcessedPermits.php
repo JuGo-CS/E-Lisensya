@@ -1,6 +1,7 @@
 <?php
 // DESCRIPTION: 
-//     this handles getting processed (approved/rejected) permits for personnel view
+//     this handles getting today's processed permits for the personnel dashboard
+//     Uses a 24-hour cycle: 6:00 PM to 5:59 PM next day
 
 include_once '../config/cors.php';
 
@@ -15,6 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 include_once '../config/DBConnector.php';
 
+// Window: 12:00 AM (midnight) of today → 5:59 PM of the next day
+$now = new DateTime('now');
+$currentDate = $now->format('Y-m-d');
+$tomorrow = new DateTime('now');
+$tomorrow->modify('+1 day');
+
+$window_start = $currentDate . ' 00:00:00';
+$window_end   = $tomorrow->format('Y-m-d') . ' 17:59:00';
 
 $query = "
     SELECT 
@@ -35,10 +44,13 @@ $query = "
     LEFT JOIN personnel personnel_tbl ON p.personnel_id = personnel_tbl.personal_id
     LEFT JOIN person personnel_person ON personnel_tbl.personal_id = personnel_person.personal_id
     WHERE p.status IN ('COMPLETED', 'REJECTED', 'BREACHED', 'CANCELLED')
+    AND CONCAT(p.date_created, ' ', p.time_created) >= ?
+    AND CONCAT(p.date_created, ' ', p.time_created) <= ?
     ORDER BY p.date_created DESC, p.time_created DESC
 ";
 
 $stmt = $conn->prepare($query);
+$stmt->bind_param("ss", $window_start, $window_end);
 $stmt->execute();
 $result = $stmt->get_result();
 $processed_permits = [];

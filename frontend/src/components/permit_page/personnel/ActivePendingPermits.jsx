@@ -3,7 +3,7 @@ import useFetch from '../../../../../database/useFetch.jsx';
 import usePost from '../../../../../database/usePost.jsx';
 import LoadScreen from '../../LoadScreen';
 
-const ActivePendingPermits = ({ personnelId }) => {
+const ActivePendingPermits = ({ personnelId, onActionDone }) => {
     const host = window.location.hostname;
     const [refreshKey, setRefreshKey] = useState(0);
     const url = `http://${host}/sample/E-Lisensya/backend/personnel/GetActivePendingPermit.php?r=${refreshKey}`;
@@ -66,6 +66,7 @@ const ActivePendingPermits = ({ personnelId }) => {
                     setModal(null);
                     setActionResult(null);
                     setRefreshKey(k => k + 1);
+                    if (onActionDone) onActionDone();
                 }, 800);
             } else {
                 setActionResult({ ok: false, message: msg });
