@@ -224,7 +224,7 @@ const ProfileContainer = ({ onSignOut }) => {
                                                 <>
                                                     <div className="font-bold min-w-0 truncate">{c}</div>
                                                     <div className="ml-auto flex gap-2">
-                                                        <button onClick={()=>startEdit(i,c)} className="bg-yellow-400 rounded px-2 py-1 flex-none">Edit</button>
+                                                        <button onClick={()=>startEdit(i,c)} className="bg-yellow-300 rounded px-2 py-1 flex-none">Edit</button>
                                                         <button onClick={()=>handleDelete(c)} className="bg-red-500 text-white rounded px-2 py-1 flex-none">Delete</button>
                                                     </div>
                                                 </>
