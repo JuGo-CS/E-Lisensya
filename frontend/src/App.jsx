@@ -2,6 +2,7 @@ import Navbar from './components/Navbar.jsx'
 import Header from './components/Header.jsx';
 import StudentsPermits from './pages/StudentsPermits.jsx';
 import StudentRoommates from './pages/StudentRoommates.jsx';
+import StudentArchive from './pages/StudentArchive.jsx';
 import PersonnelPermits from './pages/PersonnelPermits.jsx'; 
 import PersonnelRoommates from './pages/PersonnelRoommates.jsx';
 import PersonnelArchive from './pages/PersonnelArchive.jsx';
@@ -49,6 +50,7 @@ function App() {
 									<>
 										<Route path="/" element={<StudentsPermits id={user.personal_id} />} />
 										<Route path="/roommates" element={<StudentRoommates id={user.personal_id} />} />
+									<Route path="/archive" element={<StudentArchive studentId={user.personal_id} />} />
 									</>
 								) : (
 									<>
