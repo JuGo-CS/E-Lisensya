@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import ActivePendingPermits from "../components/permit_page/personnel/ActivePendingPermits.jsx";
-import ProcessedPermits from "../components/permit_page/personnel/ProcessedPermits.jsx";
-import DateTimeIndicator from "../components/DateTimeIndicator.jsx";
+import ActivePendingPermits from "../components/permits/personnel/ActivePendingPermits.jsx";
+import ProcessedPermits from "../components/permits/personnel/ProcessedPermits.jsx";
+import DateTimeIndicator from "../components/ui/DateTimeIndicator.jsx";
 
 const PersonnelPermits = ({ id }) => {
     const [refreshKey, setRefreshKey] = useState(0);

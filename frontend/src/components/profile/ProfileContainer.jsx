@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
-import useFetch from '../../../../database/useFetch.jsx';
-import usePost from '../../../../database/usePost.jsx';
-import ConfirmModal from './ConfirmModal.jsx';
-import Toast from './Toast.jsx';
+import useFetch from '../../hooks/useFetch.jsx';
+import usePost from '../../hooks/usePost.jsx';
+import ConfirmModal from '../ui/ConfirmModal.jsx';
+import Toast from '../ui/Toast.jsx';
 
 const ProfileContainer = ({ onSignOut }) => {
     const raw = localStorage.getItem('user');

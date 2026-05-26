@@ -1,5 +1,5 @@
-import useFetch from '../../../../../database/useFetch.jsx';
-import LoadScreen from '../../LoadScreen';
+import useFetch from '../../../hooks/useFetch.jsx';
+import LoadScreen from '../../ui/LoadScreen';
 
 const ProcessedPermits = ({ refreshKey = 0 }) => {
     const host = window.location.hostname;

@@ -1,5 +1,5 @@
-import Navbar from './components/Navbar.jsx'
-import Header from './components/Header.jsx';
+import Navbar from './components/layout/Navbar.jsx'
+import Header from './components/layout/Header.jsx';
 import StudentsPermits from './pages/StudentsPermits.jsx';
 import StudentRoommates from './pages/StudentRoommates.jsx';
 import StudentArchive from './pages/StudentArchive.jsx';

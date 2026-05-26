@@ -1,5 +1,5 @@
-import LoadScreen from "./LoadScreen";
-import useFetch from "../../../database/useFetch";
+import LoadScreen from "./ui/LoadScreen";
+import useFetch from "../hooks/useFetch";
 
 const Roommates = ({studentId}) => {
 

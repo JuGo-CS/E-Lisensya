@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import useFetch from '../../../../../database/useFetch.jsx';
-import usePost from '../../../../../database/usePost.jsx';
-import LoadScreen from '../../LoadScreen';
+import useFetch from '../../../hooks/useFetch.jsx';
+import usePost from '../../../hooks/usePost.jsx';
+import LoadScreen from '../../ui/LoadScreen';
 
 const ActivePendingPermits = ({ personnelId, onActionDone }) => {
     const host = window.location.hostname;

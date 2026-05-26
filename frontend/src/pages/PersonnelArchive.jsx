@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import useFetch from '../../../database/useFetch.jsx';
-import LoadScreen from '../components/LoadScreen';
+import useFetch from '../hooks/useFetch.jsx';
+import LoadScreen from '../components/ui/LoadScreen';
 
 const PersonnelArchive = () => {
     const host = window.location.hostname;

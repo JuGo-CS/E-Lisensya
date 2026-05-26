@@ -1,5 +1,5 @@
-import LoadScreen from "../components/LoadScreen";
-import useFetch from "../../../database/useFetch.jsx";
+import LoadScreen from "../components/ui/LoadScreen";
+import useFetch from "../hooks/useFetch.jsx";
 
 const StudentArchive = ({ studentId }) => {
     const host = window.location.hostname;

@@ -1,5 +1,5 @@
-import ActivePermits from "../components/permit_page/student/ActivePermits.jsx";
-import DateTimeIndicator from "../components/DateTimeIndicator.jsx";
+import ActivePermits from "../components/permits/student/ActivePermits.jsx";
+import DateTimeIndicator from "../components/ui/DateTimeIndicator.jsx";
 
 const StudentsPermits = ( {id} ) => {
     return ( 
