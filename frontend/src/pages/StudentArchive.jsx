@@ -72,13 +72,6 @@ const StudentArchive = ({ studentId }) => {
                                             <hr className="border-t-2 border-slate-900" />
 
                                             <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
-                                                <p className="pl-2">Signed By</p>
-                                                <p className="-ml-5 sm:-ml-20"> - {permitItem.personnel}</p>
-                                            </div>
-
-                                            <hr className="border-t-2 border-slate-900" />
-
-                                            <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
                                                 <p className="pl-2">Status</p>
                                                 <p className="-ml-5 sm:-ml-20"> - {permitItem.status}</p>
                                             </div>
@@ -90,12 +83,22 @@ const StudentArchive = ({ studentId }) => {
                                                 <p className="-ml-5 sm:-ml-20"> - {permitItem.date_created}</p>
                                             </div>
 
-                                            <hr className="border-t-2 border-slate-900" />
+                                            {permitItem.status !== 'BREACHED' && permitItem.status !== 'CANCELLED' && (
+                                                <>
+                                                    <hr className="border-t-2 border-slate-900" />
+                                                    <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
+                                                        <p className="pl-2">Signed By</p>
+                                                        <p className="-ml-5 sm:-ml-20"> - {permitItem.personnel}</p>
+                                                    </div>
 
-                                            <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
-                                                <p className="pl-2">Log Return</p>
-                                                <p className="-ml-5 sm:-ml-20"> - {permitItem.arrival_time}</p>
-                                            </div>
+                                                    <hr className="border-t-2 border-slate-900" />
+
+                                                    <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
+                                                        <p className="pl-2">Log Return</p>
+                                                        <p className="-ml-5 sm:-ml-20"> - {permitItem.arrival_time}</p>
+                                                    </div>
+                                                </>
+                                            )}
 
                                             {permitItem.validated_at && (
                                                 <>
