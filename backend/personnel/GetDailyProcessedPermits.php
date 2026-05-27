@@ -16,14 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 include_once '../config/DBConnector.php';
 
-// Window: 12:00 AM (midnight) of today → 5:59 PM of the next day
+// Window: yesterday 6:00 PM → today 5:59 PM
 $now = new DateTime('now');
 $currentDate = $now->format('Y-m-d');
-$tomorrow = new DateTime('now');
-$tomorrow->modify('+1 day');
+$yesterday = new DateTime('now');
+$yesterday->modify('-1 day');
 
-$window_start = $currentDate . ' 00:00:00';
-$window_end   = $tomorrow->format('Y-m-d') . ' 17:59:00';
+$window_start = $yesterday->format('Y-m-d') . ' 18:00:00';
+$window_end   = $currentDate . ' 17:59:00';
 
 $query = "
     SELECT 
