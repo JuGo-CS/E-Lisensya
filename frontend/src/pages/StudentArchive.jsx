@@ -22,6 +22,8 @@ const StudentArchive = ({ studentId }) => {
     }
 
     const statusColors = {
+        COMPLETED: 'bg-green-100',
+        REJECTED: 'bg-red-300',
         BREACHED: 'bg-red-100',
         CANCELLED: 'bg-gray-200',
     };

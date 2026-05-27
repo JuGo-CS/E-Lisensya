@@ -21,6 +21,7 @@ const InactivePermits = ({ studentId }) => {
                 const statusColors = {
                     BREACHED: 'bg-red-100',
                     CANCELLED: 'bg-gray-200',
+                    REJECTED: 'bg-red-300',
                 };
 
                 const cardColor = statusColors[permitItem.status] || 'bg-green-100';
