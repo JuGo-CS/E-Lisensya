@@ -49,10 +49,10 @@ const ProfileContainer = ({ onSignOut }) => {
         const result = await post(`http://${host}/sample/E-Lisensya/backend/profile/AddContact.php`, {
             id, contact_number: addingValue
         });
-        const msg = result.response?.message || result.error || (result.success ? 'Added' : 'Error');
+        const msg = result.response?.message || result.error || (result.response?.success ? 'Added' : 'Error');
         setFeedback(msg);
-        addToast(msg, result.success ? 'success' : 'error');
-        if (result.success) { setAddingValue(''); refresh(); }
+        addToast(msg, result.response?.success ? 'success' : 'error');
+        if (result.response?.success) { setAddingValue(''); refresh(); }
     };
 
     const handleDelete = (contact) => {
