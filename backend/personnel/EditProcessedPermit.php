@@ -82,9 +82,20 @@ if ($new_status === 'ACTIVE') {
     }
 }
 
-// Update the permit status and assign the editing personnel
-$upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ? WHERE permit_id = ?");
-$upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
+// Update the permit status, assign the editing personnel, and set validated timestamp
+// Only set validated date/time for final verdicts (COMPLETED, REJECTED);
+// clear them when reverting (ACTIVE, CANCELLED) so the new cycle starts fresh
+$has_verdict = in_array($new_status, ['COMPLETED', 'REJECTED']);
+$validated_date = $has_verdict ? date('Y-m-d') : null;
+$validated_time = $has_verdict ? date('H:i:s') : null;
+
+if ($has_verdict) {
+    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = ?, validated_time = ? WHERE permit_id = ?");
+    $upd->bind_param("sissi", $new_status, $verified_personal_id, $validated_date, $validated_time, $permit_id);
+} else {
+    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = NULL, validated_time = NULL WHERE permit_id = ?");
+    $upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
+}
 
 if ($upd->execute() && $upd->affected_rows > 0) {
     echo json_encode(["success" => true, "message" => "Permit status updated to $new_status"]);

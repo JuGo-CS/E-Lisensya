@@ -31,13 +31,16 @@ if (!$permit_id) {
     exit;
 }
 
+$validated_date = date('Y-m-d');
+$validated_time = date('H:i:s');
+
 $stmt = $conn->prepare("
     UPDATE permit 
-    SET status = 'COMPLETED', personnel_id = ? 
+    SET status = 'COMPLETED', personnel_id = ?, validated_date = ?, validated_time = ?
     WHERE permit_id = ? AND status = 'PENDING'
 ");
 
-$stmt->bind_param("ii", $verified_personal_id, $permit_id);
+$stmt->bind_param("issi", $verified_personal_id, $validated_date, $validated_time, $permit_id);
 
 if ($stmt->execute() && $stmt->affected_rows > 0) {
     echo json_encode(["success" => true, "message" => "Permit approved"]);

@@ -57,8 +57,11 @@ if ($permit_status !== 'PENDING') {
 
 
 // update status and bind the person who handled it to that permit
-$upd = $conn->prepare("UPDATE permit SET status = 'REJECTED', personnel_id = ? WHERE permit_id = ?");
-$upd->bind_param("ii", $verified_personal_id, $permit_id);
+$validated_date = date('Y-m-d');
+$validated_time = date('H:i:s');
+
+$upd = $conn->prepare("UPDATE permit SET status = 'REJECTED', personnel_id = ?, validated_date = ?, validated_time = ? WHERE permit_id = ?");
+$upd->bind_param("issi", $verified_personal_id, $validated_date, $validated_time, $permit_id);
 
 if ($upd->execute() && $upd->affected_rows > 0) {
     echo json_encode(["success" => true, "message" => "permit rejected successfully"]);
