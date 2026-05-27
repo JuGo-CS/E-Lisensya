@@ -92,6 +92,10 @@ $validated_time = $has_verdict ? date('H:i:s') : null;
 if ($has_verdict) {
     $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = ?, validated_time = ? WHERE permit_id = ?");
     $upd->bind_param("sissi", $new_status, $verified_personal_id, $validated_date, $validated_time, $permit_id);
+} elseif ($new_status === 'ACTIVE') {
+    // Uncancelling — reset to ACTIVE and clear all timestamps so the cycle restarts fresh
+    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = NULL, validated_time = NULL, arrival_date = NULL, arrival_time = NULL WHERE permit_id = ?");
+    $upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
 } else {
     $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = NULL, validated_time = NULL WHERE permit_id = ?");
     $upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
