@@ -204,7 +204,11 @@ const ActivePendingPermits = ({ personnelId, onActionDone }) => {
                                     ? `Cancel ${modal.permit.student_name}'s active ${modal.permit.permit_name} permit?`
                                     : `Reject ${modal.permit.student_name}'s ${modal.permit.permit_name} permit?`}
                         </p>
-                        <p className="text-md sm:text-2xl text-gray-500 -mt-2 mb-4"> You can change this decision later if needed.</p>
+                        <p className={`text-md sm:text-xl -mt-2 mb-4 ${modal.type === 'cancel' ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
+                            {modal.type === 'cancel'
+                                ? 'This action is irreversible! The permit will stay cancelled permanently.'
+                                : 'You can change this decision later if needed.'}
+                        </p>
 
                         {actionResult && (
                             <p className={`mb-3 text-sm text-center ${actionResult.ok ? 'text-green-600' : 'text-red-600'}`}>
