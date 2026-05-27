@@ -1,12 +1,19 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 include '../config/DBConnector.php';
 
-
-$username = isset($_GET['userName']) ? $_GET['userName'] : null;
-$password = isset($_GET['password']) ? $_GET['password'] : null;
+$data = json_decode(file_get_contents("php://input"), true);
+$username = isset($data['userName']) ? $data['userName'] : (isset($_GET['userName']) ? $_GET['userName'] : null);
+$password = isset($data['password']) ? $data['password'] : (isset($_GET['password']) ? $_GET['password'] : null);
 
 if ($username && $password) {
     $query = $conn->prepare("SELECT * FROM person as p WHERE p.username = ? AND p.password = ?");$query->bind_param("ss", $username, $password);

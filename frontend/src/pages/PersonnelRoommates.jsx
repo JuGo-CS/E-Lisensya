@@ -45,30 +45,30 @@ const PersonnelRoommates = () => {
                         {/* Student cards */}
                         <div className="flex flex-col gap-3">
                             {room.students.map((student) => (
-                                <div key={student.permit_id} className="bg-orange-100 rounded-2xl border-2 border-slate-900">
-                                    <div className="font-black text-slate-900">
-                                        <div className="grid grid-cols-2 p-3 sm:text-xl items-center">
+                                <div key={student.permit_id} className="bg-orange-100 rounded-2xl border-2 border-slate-900 ">
+                                    <div className="font-black text-slate-900 sm:text-2xl">
+                                        <div className="grid grid-cols-2 p-3 items-center">
                                             <p className="pl-2">Student</p>
                                             <p className="-ml-5 sm:-ml-20"> - {student.student_name}</p>
                                         </div>
 
                                         <hr className="border-t-2 border-slate-900" />
 
-                                        <div className="grid grid-cols-2 p-3 sm:text-xl items-center">
+                                        <div className="grid grid-cols-2 p-3 items-center">
                                             <p className="pl-2">Permit</p>
                                             <p className="-ml-5 sm:-ml-20"> - {student.permit_name}</p>
                                         </div>
 
                                         <hr className="border-t-2 border-slate-900" />
 
-                                        <div className="grid grid-cols-2 p-3 sm:text-xl items-center">
+                                        <div className="grid grid-cols-2 p-3 items-center">
                                             <p className="pl-2">Filed at</p>
                                             <p className="-ml-5 sm:-ml-20"> - {student.time_created}</p>
                                         </div>
 
                                         <hr className="border-t-2 border-slate-900" />
 
-                                        <div className="grid grid-cols-2 p-3 sm:text-xl items-center">
+                                        <div className="grid grid-cols-2 p-3 items-center">
                                             <p className="pl-2">Valid until</p>
                                             <p className="-ml-5 sm:-ml-20"> - {student.valid_until}</p>
                                         </div>

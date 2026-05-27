@@ -50,13 +50,15 @@ CREATE TABLE `personnel` (
 CREATE TABLE `permit` (
     `permit_id` int(11) NOT NULL AUTO_INCREMENT,
     `student_id` int(11) NOT NULL,
-    `personnel_id` int(11) NOT NULL,
+    `personnel_id` int(11) DEFAULT NULL,
     `permit_name` varchar(255) NOT NULL,
     `status` varchar(255) NOT NULL,
     `date_created` date NOT NULL,
     `time_created` time NOT NULL,
     `arrival_date` date DEFAULT NULL,
     `arrival_time` time DEFAULT NULL,
+    `validated_date` date DEFAULT NULL,
+    `validated_time` time DEFAULT NULL,
     PRIMARY KEY (`permit_id`),
     CONSTRAINT `fk_permit_student` FOREIGN KEY (`student_id`) REFERENCES `student` (`personal_id`),
     CONSTRAINT `fk_permit_personnel` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`personal_id`)

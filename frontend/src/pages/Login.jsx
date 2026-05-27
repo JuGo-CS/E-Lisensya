@@ -16,9 +16,13 @@ const Login = ({ onLoginSuccess }) => {
         const passwordInput = formData.get("password");
 
         const host = window.location.hostname;
-        const url = `http://${host}/sample/E-Lisensya/backend/auth/LoggingIn.php?userName=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
+        const url = `http://${host}/sample/E-Lisensya/backend/auth/LoggingIn.php`;
 
-        fetch(url)
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userName: usernameInput, password: passwordInput })
+        })
             .then(res => {
                 if (!res.ok) {
                     throw Error("Could not connect to authentication server.");

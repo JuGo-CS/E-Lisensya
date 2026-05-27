@@ -34,12 +34,12 @@ $serverOutside = ($serverHour < 6 || $serverHour >= 18);
 
 
 // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
-// if ($serverOutside) {
-//     $msg = sprintf("Filing not allowed at this time. Allowed between %s and %s.", date('g:i A', strtotime('06:00')), date('g:i A', strtotime('18:00')));
-//     echo json_encode(["success" => false, "message" => $msg]);
-//     $conn->close();
-//     exit;
-// }
+if ($serverOutside) {
+    $msg = sprintf("Filing not allowed at this time. Allowed between %s and %s.", date('g:i A', strtotime('06:00')), date('g:i A', strtotime('18:00')));
+    echo json_encode(["success" => false, "message" => $msg]);
+    $conn->close();
+    exit;
+}
 
 // prevent more than 1 active pending permit per student
 $check = $conn->prepare("SELECT COUNT(*) AS cur_permit FROM permit WHERE UPPER(TRIM(status)) = 'ACTIVE' AND student_id = ?");
