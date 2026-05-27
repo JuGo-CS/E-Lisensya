@@ -7,7 +7,7 @@ include '../config/DBConnector.php';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($id) {
-    $query = $conn->prepare("SELECT * FROM permit WHERE status!='ACTIVE' AND status!='PENDING' AND student_id = ?");
+    $query = $conn->prepare("SELECT * FROM permit WHERE status!='ACTIVE' AND status!='PENDING' AND student_id = ? ORDER BY date_created DESC, time_created DESC");
     $query->bind_param("i", $id);
     $query->execute();
     $active_permit = $query->get_result(); 
@@ -55,12 +55,20 @@ if ($id) {
 
             $full_created_date = $time_created_ampm . ', ' . $date_created_fmt;
 
+            // Format validated date/time if exists
+            $validated_datetime = null;
+            if (!empty($permit['validated_date']) && !empty($permit['validated_time'])) {
+                $val_dt = strtotime($permit['validated_date'] . ' ' . $permit['validated_time']);
+                $validated_datetime = date("g:i a", $val_dt) . ', ' . date("n/j/Y", strtotime($permit['validated_date']));
+            }
+
             $all_permits[] = [
                 "permit_name" => $permit["permit_name"],
                 "personnel" => $personnel_name,
                 "status" => $permit["status"],
                 "date_created" => $full_created_date,
-                "arrival_time" => $full_arrival_datetime
+                "arrival_time" => $full_arrival_datetime,
+                "validated_at" => $validated_datetime
             ];
 
         }

@@ -33,7 +33,7 @@ $query = "
     JOIN student s ON p.student_id = s.personal_id
     JOIN person per ON s.personal_id = per.personal_id
     WHERE p.status IN ('ACTIVE', 'PENDING')
-    ORDER BY p.date_created ASC, p.time_created ASC
+    ORDER BY p.date_created DESC, p.time_created DESC
 ";
 
 $stmt = $conn->prepare($query);

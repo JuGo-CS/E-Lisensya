@@ -25,6 +25,8 @@ $query = "
         p.status,
         p.arrival_date,
         p.arrival_time,
+        p.validated_date,
+        p.validated_time,
         per.first_name,
         per.last_name,
         s.room_number,
@@ -60,6 +62,13 @@ while ($row = $result->fetch_assoc()) {
         $arrival_time = $arrival_ampm . ', ' . $arrival_date_fmt;
     }
 
+    // Format validated date/time if exists
+    $validated_at = null;
+    if (!empty($row['validated_date']) && !empty($row['validated_time'])) {
+        $val_dt = strtotime($row['validated_date'] . ' ' . $row['validated_time']);
+        $validated_at = date("g:i a", $val_dt) . ', ' . date("n/j/Y", strtotime($row['validated_date']));
+    }
+
     $processed_permits[] = [
         'permit_id' => (int)$row['permit_id'],
         'permit_name' => $row['permit_name'],
@@ -68,7 +77,8 @@ while ($row = $result->fetch_assoc()) {
         'student_name'=> trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
         'room_number'=> (int)$row['room_number'],
         'personnel_name' => $row['personnel_name'] ?? 'N/A',
-        'arrival_time' => $arrival_time
+        'arrival_time' => $arrival_time,
+        'validated_at' => $validated_at
     ];
 }
 

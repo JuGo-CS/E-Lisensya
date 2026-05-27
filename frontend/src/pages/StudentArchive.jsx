@@ -73,6 +73,16 @@ const StudentArchive = ({ studentId }) => {
                                     <p className="pl-2">Log Return</p>
                                     <p className="-ml-5 sm:-ml-20"> - {permitItem.arrival_time}</p>
                                 </div>
+
+                                {permitItem.validated_at && (
+                                    <>
+                                        <hr className="border-t-2 border-slate-900" />
+                                        <div className="grid grid-cols-2 p-4 sm:text-2xl items-center">
+                                            <p className="pl-2">Validated at</p>
+                                            <p className="-ml-5 sm:-ml-20"> - {permitItem.validated_at}</p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     );
