@@ -60,15 +60,27 @@ if ($permit_status !== 'PENDING') {
 $validated_date = date('Y-m-d');
 $validated_time = date('H:i:s');
 
-$upd = $conn->prepare("UPDATE permit SET status = 'REJECTED', personnel_id = ?, validated_date = ?, validated_time = ? WHERE permit_id = ?");
-$upd->bind_param("issi", $verified_personal_id, $validated_date, $validated_time, $permit_id);
+$conn->begin_transaction();
 
-if ($upd->execute() && $upd->affected_rows > 0) {
+// Step A: Update permit status
+$upd = $conn->prepare("UPDATE permit SET status = 'REJECTED' WHERE permit_id = ?");
+$upd->bind_param("i", $permit_id);
+$upd_ok = $upd->execute() && $upd->affected_rows > 0;
+$upd->close();
+
+// Step B: Insert validation record
+$ins = $conn->prepare("INSERT INTO permit_validation (permit_id, personnel_id, validated_date, validated_time) VALUES (?, ?, ?, ?)");
+$ins->bind_param("iiss", $permit_id, $verified_personal_id, $validated_date, $validated_time);
+$ins_ok = $ins->execute();
+$ins->close();
+
+if ($upd_ok && $ins_ok) {
+    $conn->commit();
     echo json_encode(["success" => true, "message" => "permit rejected successfully"]);
 } else {
+    $conn->rollback();
     echo json_encode(["success" => false, "message" => "Permit rejection unsuccessful"]);
 }
 
-$upd->close();
 $conn->close();
 ?>

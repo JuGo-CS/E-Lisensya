@@ -32,18 +32,21 @@ $query = "
         p.date_created, 
         p.time_created,
         p.status,
-        p.arrival_date,
-        p.arrival_time,
-        p.validated_date,
-        p.validated_time,
+        pa.arrival_date,
+        pa.arrival_time,
+        pv.validated_date,
+        pv.validated_time,
+        pv.personnel_id,
         per.first_name,
         per.last_name,
         s.room_number,
         CONCAT(personnel_person.first_name, ' ', personnel_person.last_name) AS personnel_name
     FROM permit p
+    LEFT JOIN permit_arrival pa ON p.permit_id = pa.permit_id
+    LEFT JOIN permit_validation pv ON p.permit_id = pv.permit_id
     JOIN student s ON p.student_id = s.personal_id
     JOIN person per ON s.personal_id = per.personal_id
-    LEFT JOIN personnel personnel_tbl ON p.personnel_id = personnel_tbl.personal_id
+    LEFT JOIN personnel personnel_tbl ON pv.personnel_id = personnel_tbl.personal_id
     LEFT JOIN person personnel_person ON personnel_tbl.personal_id = personnel_person.personal_id
     WHERE p.status IN ('COMPLETED', 'REJECTED', 'BREACHED', 'CANCELLED')
     AND CONCAT(p.date_created, ' ', p.time_created) >= ?
