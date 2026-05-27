@@ -27,7 +27,7 @@ const PersonnelPermits = ({ id }) => {
             <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
                 <h1 className="font-black text-2xl sm:text-3xl text-slate-900 ml-4 sm:mx-7 pb-1 sm:pb-2">Processed Permits</h1>
 
-                <ProcessedPermits refreshKey={refreshKey} />
+                <ProcessedPermits refreshKey={refreshKey} personnelId={id} />
             </div>
         </div>
      );
