@@ -68,7 +68,8 @@ if ($id) {
                 "status" => $permit["status"],
                 "date_created" => $full_created_date,
                 "arrival_time" => $full_arrival_datetime,
-                "validated_at" => $validated_datetime
+                "validated_at" => $validated_datetime,
+                "validated_date_raw" => $permit['validated_date'] ?? null
             ];
 
         }

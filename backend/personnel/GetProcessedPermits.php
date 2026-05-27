@@ -78,7 +78,8 @@ while ($row = $result->fetch_assoc()) {
         'room_number'=> (int)$row['room_number'],
         'personnel_name' => $row['personnel_name'] ?? 'N/A',
         'arrival_time' => $arrival_time,
-        'validated_at' => $validated_at
+        'validated_at' => $validated_at,
+        'validated_date_raw' => $row['validated_date'] ?? null
     ];
 }
 
