@@ -19,7 +19,6 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 // required: student_id and permit_name
 $student_id   = isset($data['student_id']) ? (int)$data['student_id'] : null;
-$personnel_id = isset($data['personnel_id']) ? (int)$data['personnel_id'] : 0; // default 0 if not provided
 $permit_name  = isset($data['permit_name']) ? $data['permit_name'] : null;
 
 if (!$student_id || !$permit_name) {
@@ -34,12 +33,12 @@ $serverOutside = ($serverHour < 6 || $serverHour >= 18);
 
 
 // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
-if ($serverOutside) {
-    $msg = sprintf("Filing not allowed at this time. Allowed between %s and %s.", date('g:i A', strtotime('06:00')), date('g:i A', strtotime('18:00')));
-    echo json_encode(["success" => false, "message" => $msg]);
-    $conn->close();
-    exit;
-}
+// if ($serverOutside) {
+//     $msg = sprintf("Filing not allowed at this time. Allowed between %s and %s.", date('g:i A', strtotime('06:00')), date('g:i A', strtotime('18:00')));
+//     echo json_encode(["success" => false, "message" => $msg]);
+//     $conn->close();
+//     exit;
+// }
 
 // prevent more than 1 active pending permit per student
 $check = $conn->prepare("SELECT COUNT(*) AS cur_permit FROM permit WHERE UPPER(TRIM(status)) = 'ACTIVE' AND student_id = ?");
@@ -61,14 +60,9 @@ $status = 'ACTIVE';
 $current_date = date('Y-m-d');
 $current_time = date('H:i:s');
 
-// If no personnel_id was provided (0), insert NULL for personnel_id to avoid FK violation
-if ($personnel_id === 0) {
-    $query = $conn->prepare("INSERT INTO permit (student_id, personnel_id, permit_name, status, date_created, time_created) VALUES (?, NULL, ?, ?, ?, ?)");
-    $query->bind_param("issss", $student_id, $permit_name, $status, $current_date, $current_time);
-} else {
-    $query = $conn->prepare("INSERT INTO permit (student_id, personnel_id, permit_name, status, date_created, time_created) VALUES (?, ?, ?, ?, ?, ?)");
-    $query->bind_param("iissss", $student_id, $personnel_id, $permit_name, $status, $current_date, $current_time);
-}
+// Insert into permit only — permit_arrival and permit_validation get rows later in the lifecycle
+$query = $conn->prepare("INSERT INTO permit (student_id, permit_name, status, date_created, time_created) VALUES (?, ?, ?, ?, ?)");
+$query->bind_param("issss", $student_id, $permit_name, $status, $current_date, $current_time);
 
 if ($query && $query->execute()) {
     echo json_encode(["success" => true, "message" => "Permit filed successfully"]);

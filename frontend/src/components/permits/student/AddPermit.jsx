@@ -15,8 +15,8 @@ const AddPermit = ({ id, onFiled }) => {
 
     // FOR THE TIME LOGIC CATCHER ~  NO FILING OF PERMIT AFTER 6:00PM
     // don't forget to 'uncomment' ang ara sa backend/student/FilePermit.php
-    const allowedNow = hour >= 6 && hour < 18;
-    // const allowedNow = 1;
+    // const allowedNow = hour >= 6 && hour < 18;
+    const allowedNow = 1;
 
     // compute preview of valid-until based on permitType and device time
     const validUntilPreview = useMemo(() => {

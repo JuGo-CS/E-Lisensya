@@ -1,6 +1,6 @@
 <?php
 // DESCRIPTION: 
-//     handles cancellation of permit
+//     handles logging of student return/arrival
 //NOTE: data still stays in db
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -69,15 +69,27 @@ if (! $authorized) {
 $currentDate = date('Y-m-d');
 $currentTime = date('H:i:s');
 
-$upd = $conn->prepare("UPDATE permit SET status = 'PENDING', arrival_date = ?, arrival_time = ? WHERE permit_id = ?");
-$upd->bind_param("ssi", $currentDate, $currentTime, $permit_id);
-if ($upd->execute() && $upd->affected_rows > 0) {
+$conn->begin_transaction();
+
+// Step A: Update permit status to PENDING
+$upd = $conn->prepare("UPDATE permit SET status = 'PENDING' WHERE permit_id = ?");
+$upd->bind_param("i", $permit_id);
+$upd_ok = $upd->execute() && $upd->affected_rows > 0;
+$upd->close();
+
+// Step B: Insert arrival record
+$ins = $conn->prepare("INSERT INTO permit_arrival (permit_id, arrival_date, arrival_time) VALUES (?, ?, ?)");
+$ins->bind_param("iss", $permit_id, $currentDate, $currentTime);
+$ins_ok = $ins->execute();
+$ins->close();
+
+if ($upd_ok && $ins_ok) {
+    $conn->commit();
     echo json_encode(["success" => true, "message" => "Logged successfully"]);
 } else {
+    $conn->rollback();
     echo json_encode(["success" => false, "message" => "Logged unsuccessful"]);
 }
-
-$upd->close();
 
 $conn->close();
 ?>

@@ -23,9 +23,10 @@ $query = "
         p.status,
         p.date_created,
         p.time_created,
-        p.arrival_date,
-        p.arrival_time
+        pa.arrival_date,
+        pa.arrival_time
     FROM permit p
+    LEFT JOIN permit_arrival pa ON p.permit_id = pa.permit_id
     JOIN student s ON p.student_id = s.personal_id
     JOIN person per ON s.personal_id = per.personal_id
     WHERE p.status = 'ACTIVE'

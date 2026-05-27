@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root"; 
 $password = "";     
-$dbname = "e_lisensya"; 
+$dbname = "copy_e_lisensya"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

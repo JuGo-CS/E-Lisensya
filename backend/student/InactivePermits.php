@@ -7,7 +7,7 @@ include '../config/DBConnector.php';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($id) {
-    $query = $conn->prepare("SELECT * FROM permit WHERE status!='ACTIVE' AND status!='PENDING' AND student_id = ? ORDER BY date_created DESC, time_created DESC");
+    $query = $conn->prepare("SELECT p.*, pa.arrival_date, pa.arrival_time, pv.personnel_id, pv.validated_date, pv.validated_time FROM permit p LEFT JOIN permit_arrival pa ON p.permit_id = pa.permit_id LEFT JOIN permit_validation pv ON p.permit_id = pv.permit_id WHERE p.status NOT IN ('ACTIVE', 'PENDING') AND p.student_id = ? ORDER BY p.date_created DESC, p.time_created DESC");
     $query->bind_param("i", $id);
     $query->execute();
     $active_permit = $query->get_result(); 

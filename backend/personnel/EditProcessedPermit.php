@@ -27,7 +27,8 @@ if (!$permit_id || !$new_status) {
 }
 
 // Validate new_status is one of the allowed target statuses
-$allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED', 'ACTIVE'];
+// Note: CANCELLED is irreversible — once cancelled, it stays cancelled.
+$allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED'];
 if (!in_array($new_status, $allowed_targets)) {
     echo json_encode(["success" => false, "message" => "invalid target status"]);
     $conn->close();
@@ -82,31 +83,54 @@ if ($new_status === 'ACTIVE') {
     }
 }
 
-// Update the permit status, assign the editing personnel, and set validated timestamp
-// Only set validated date/time for final verdicts (COMPLETED, REJECTED);
-// clear them when reverting (ACTIVE, CANCELLED) so the new cycle starts fresh
+// Update the permit status and manage permit_arrival / permit_validation rows
+// based on the target status according to the business rules matrix.
 $has_verdict = in_array($new_status, ['COMPLETED', 'REJECTED']);
-$validated_date = $has_verdict ? date('Y-m-d') : null;
-$validated_time = $has_verdict ? date('H:i:s') : null;
+$is_cancelled = ($new_status === 'CANCELLED');
 
-if ($has_verdict) {
-    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = ?, validated_time = ? WHERE permit_id = ?");
-    $upd->bind_param("sissi", $new_status, $verified_personal_id, $validated_date, $validated_time, $permit_id);
-} elseif ($new_status === 'ACTIVE') {
-    // Uncancelling — reset to ACTIVE and clear all timestamps so the cycle restarts fresh
-    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = NULL, validated_time = NULL, arrival_date = NULL, arrival_time = NULL WHERE permit_id = ?");
-    $upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
-} else {
-    $upd = $conn->prepare("UPDATE permit SET status = ?, personnel_id = ?, validated_date = NULL, validated_time = NULL WHERE permit_id = ?");
-    $upd->bind_param("sii", $new_status, $verified_personal_id, $permit_id);
-}
+$conn->begin_transaction();
 
-if ($upd->execute() && $upd->affected_rows > 0) {
-    echo json_encode(["success" => true, "message" => "Permit status updated to $new_status"]);
-} else {
-    echo json_encode(["success" => false, "message" => "Permit update unsuccessful"]);
-}
-
+// Step 1: Update permit status
+$upd = $conn->prepare("UPDATE permit SET status = ? WHERE permit_id = ?");
+$upd->bind_param("si", $new_status, $permit_id);
+$upd->execute();
+$upd_ok = $upd->affected_rows > 0;
 $upd->close();
+
+if (!$upd_ok) {
+    $conn->rollback();
+    echo json_encode(["success" => false, "message" => "Permit update unsuccessful"]);
+    $conn->close();
+    exit;
+}
+
+// Step 2: Manage permit_validation (only for COMPLETED, REJECTED)
+if ($has_verdict) {
+    // Upsert: delete existing then insert fresh
+    $del_val = $conn->prepare("DELETE FROM permit_validation WHERE permit_id = ?");
+    $del_val->bind_param("i", $permit_id);
+    $del_val->execute();
+    $del_val->close();
+
+    $ins_val = $conn->prepare("INSERT INTO permit_validation (permit_id, personnel_id, validated_date, validated_time) VALUES (?, ?, CURRENT_DATE(), CURRENT_TIME())");
+    $ins_val->bind_param("ii", $permit_id, $verified_personal_id);
+    $ins_val->execute();
+    $ins_val->close();
+} elseif ($is_cancelled) {
+    // Remove validation and arrival records when cancelling
+    $del_val = $conn->prepare("DELETE FROM permit_validation WHERE permit_id = ?");
+    $del_val->bind_param("i", $permit_id);
+    $del_val->execute();
+    $del_val->close();
+
+    $del_arr = $conn->prepare("DELETE FROM permit_arrival WHERE permit_id = ?");
+    $del_arr->bind_param("i", $permit_id);
+    $del_arr->execute();
+    $del_arr->close();
+}
+
+$conn->commit();
+echo json_encode(["success" => true, "message" => "Permit status updated to $new_status"]);
+
 $conn->close();
 ?>
