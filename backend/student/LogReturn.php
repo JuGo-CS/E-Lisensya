@@ -1,6 +1,6 @@
 <?php
 // DESCRIPTION: 
-//     handles cancellation of permit
+//     handles logging of student return/arrival
 //NOTE: data still stays in db
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
