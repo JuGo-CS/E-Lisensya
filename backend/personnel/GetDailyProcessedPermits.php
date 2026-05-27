@@ -49,13 +49,16 @@ $query = "
     LEFT JOIN personnel personnel_tbl ON pv.personnel_id = personnel_tbl.personal_id
     LEFT JOIN person personnel_person ON personnel_tbl.personal_id = personnel_person.personal_id
     WHERE p.status IN ('COMPLETED', 'REJECTED', 'BREACHED', 'CANCELLED')
-    AND CONCAT(p.date_created, ' ', p.time_created) >= ?
-    AND CONCAT(p.date_created, ' ', p.time_created) <= ?
+    AND (
+        (p.status IN ('COMPLETED', 'REJECTED') AND CONCAT(pv.validated_date, ' ', pv.validated_time) >= ? AND CONCAT(pv.validated_date, ' ', pv.validated_time) <= ?)
+        OR
+        (p.status IN ('BREACHED', 'CANCELLED') AND CONCAT(p.date_created, ' ', p.time_created) >= ? AND CONCAT(p.date_created, ' ', p.time_created) <= ?)
+    )
     ORDER BY p.date_created DESC, p.time_created DESC
 ";
 
 $stmt = $conn->prepare($query);
-$stmt->bind_param("ss", $window_start, $window_end);
+$stmt->bind_param("ssss", $window_start, $window_end, $window_start, $window_end);
 $stmt->execute();
 $result = $stmt->get_result();
 $processed_permits = [];
@@ -93,7 +96,9 @@ while ($row = $result->fetch_assoc()) {
         'room_number'=> (int)$row['room_number'],
         'personnel_name' => $row['personnel_name'] ?? 'N/A',
         'arrival_time' => $arrival_time,
-        'validated_at' => $validated_at
+        'validated_at' => $validated_at,
+        'validated_date_raw' => $row['validated_date'] ?? null,
+        'date_created_raw' => $row['date_created']
     ];
 }
 

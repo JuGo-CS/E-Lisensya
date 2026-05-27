@@ -44,7 +44,6 @@ const ProcessedPermits = ({ refreshKey = 0, personnelId }) => {
             options.push({ label: 'Confirm', value: 'COMPLETED' });
             options.push({ label: 'Cancel', value: 'CANCELLED' });
         } else if (currentStatus === 'CANCELLED') {
-            options.push({ label: 'Uncancel', value: 'ACTIVE' });
             options.push({ label: 'Confirm', value: 'COMPLETED' });
             options.push({ label: 'Reject', value: 'REJECTED' });
         }
@@ -207,9 +206,7 @@ const ProcessedPermits = ({ refreshKey = 0, personnelId }) => {
                                                 ? 'bg-slate-700 hover:bg-slate-950'
                                                 : opt.value === 'REJECTED'
                                                     ? 'bg-red-600 hover:bg-red-800'
-                                                    : opt.value === 'ACTIVE'
-                                                        ? 'bg-orange-500 hover:bg-orange-700'
-                                                        : 'bg-gray-500 hover:bg-gray-700'
+                                                    : 'bg-gray-500 hover:bg-gray-700'
                                     }`}
                                 >
                                     {processing ? 'Processing...' : opt.label}

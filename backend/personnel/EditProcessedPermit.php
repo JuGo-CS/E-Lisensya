@@ -27,7 +27,8 @@ if (!$permit_id || !$new_status) {
 }
 
 // Validate new_status is one of the allowed target statuses
-$allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED', 'ACTIVE'];
+// Note: CANCELLED is irreversible — once cancelled, it stays cancelled.
+$allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED'];
 if (!in_array($new_status, $allowed_targets)) {
     echo json_encode(["success" => false, "message" => "invalid target status"]);
     $conn->close();
@@ -85,7 +86,6 @@ if ($new_status === 'ACTIVE') {
 // Update the permit status and manage permit_arrival / permit_validation rows
 // based on the target status according to the business rules matrix.
 $has_verdict = in_array($new_status, ['COMPLETED', 'REJECTED']);
-$is_active = ($new_status === 'ACTIVE');
 $is_cancelled = ($new_status === 'CANCELLED');
 
 $conn->begin_transaction();
@@ -93,7 +93,8 @@ $conn->begin_transaction();
 // Step 1: Update permit status
 $upd = $conn->prepare("UPDATE permit SET status = ? WHERE permit_id = ?");
 $upd->bind_param("si", $new_status, $permit_id);
-$upd_ok = $upd->execute() && $upd->affected_rows > 0;
+$upd->execute();
+$upd_ok = $upd->affected_rows > 0;
 $upd->close();
 
 if (!$upd_ok) {
@@ -103,24 +104,9 @@ if (!$upd_ok) {
     exit;
 }
 
-// Step 2: Manage permit_arrival (only for COMPLETED, REJECTED, PENDING)
+// Step 2: Manage permit_validation (only for COMPLETED, REJECTED)
 if ($has_verdict) {
-    // Ensure arrival row exists (should already exist from LogReturn)
-    $ins_arr = $conn->prepare("INSERT IGNORE INTO permit_arrival (permit_id, arrival_date, arrival_time) VALUES (?, CURRENT_DATE(), CURRENT_TIME())");
-    $ins_arr->bind_param("i", $permit_id);
-    $ins_arr->execute();
-    $ins_arr->close();
-} elseif ($is_active || $is_cancelled) {
-    // Remove arrival record when reverting to ACTIVE or CANCELLED
-    $del_arr = $conn->prepare("DELETE FROM permit_arrival WHERE permit_id = ?");
-    $del_arr->bind_param("i", $permit_id);
-    $del_arr->execute();
-    $del_arr->close();
-}
-
-// Step 3: Manage permit_validation (only for COMPLETED, REJECTED)
-if ($has_verdict) {
-    // Upsert validation record
+    // Upsert: delete existing then insert fresh
     $del_val = $conn->prepare("DELETE FROM permit_validation WHERE permit_id = ?");
     $del_val->bind_param("i", $permit_id);
     $del_val->execute();
@@ -130,12 +116,17 @@ if ($has_verdict) {
     $ins_val->bind_param("ii", $permit_id, $verified_personal_id);
     $ins_val->execute();
     $ins_val->close();
-} elseif ($is_active || $is_cancelled) {
-    // Remove validation record when reverting
+} elseif ($is_cancelled) {
+    // Remove validation and arrival records when cancelling
     $del_val = $conn->prepare("DELETE FROM permit_validation WHERE permit_id = ?");
     $del_val->bind_param("i", $permit_id);
     $del_val->execute();
     $del_val->close();
+
+    $del_arr = $conn->prepare("DELETE FROM permit_arrival WHERE permit_id = ?");
+    $del_arr->bind_param("i", $permit_id);
+    $del_arr->execute();
+    $del_arr->close();
 }
 
 $conn->commit();

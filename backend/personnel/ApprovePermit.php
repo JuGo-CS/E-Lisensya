@@ -39,23 +39,30 @@ $conn->begin_transaction();
 // Step A: Update permit status
 $stmt = $conn->prepare("UPDATE permit SET status = 'COMPLETED' WHERE permit_id = ? AND status = 'PENDING'");
 $stmt->bind_param("i", $permit_id);
-$stmt_ok = $stmt->execute() && $stmt->affected_rows > 0;
+$stmt->execute();
+$stmt_ok = $stmt->affected_rows > 0;
 $stmt->close();
 
-// Step B: Insert validation record
-$ins = $conn->prepare("INSERT INTO permit_validation (permit_id, personnel_id, validated_date, validated_time) VALUES (?, ?, ?, ?)");
-$ins->bind_param("iiss", $permit_id, $verified_personal_id, $validated_date, $validated_time);
-$ins_ok = $ins->execute();
-$ins->close();
-
-if ($stmt_ok && $ins_ok) {
-    $conn->commit();
-    echo json_encode(["success" => true, "message" => "Permit approved"]);
-} else {
+if (!$stmt_ok) {
     $conn->rollback();
     echo json_encode(["success" => false,"message" => "permit approval unsuccessful"]);
+    $conn->close();
+    exit;
 }
 
-$stmt->close();
+// Step B: Upsert validation record (delete then insert to handle re-approvals)
+$del = $conn->prepare("DELETE FROM permit_validation WHERE permit_id = ?");
+$del->bind_param("i", $permit_id);
+$del->execute();
+$del->close();
+
+$ins = $conn->prepare("INSERT INTO permit_validation (permit_id, personnel_id, validated_date, validated_time) VALUES (?, ?, ?, ?)");
+$ins->bind_param("iiss", $permit_id, $verified_personal_id, $validated_date, $validated_time);
+$ins->execute();
+$ins->close();
+
+$conn->commit();
+echo json_encode(["success" => true, "message" => "Permit approved"]);
+
 $conn->close();
 ?>
