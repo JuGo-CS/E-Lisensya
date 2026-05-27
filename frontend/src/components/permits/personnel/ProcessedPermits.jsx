@@ -172,7 +172,7 @@ const ProcessedPermits = ({ refreshKey = 0, personnelId }) => {
             {editModal && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-6 w-11/12 sm:w-130 shadow-xl">
-                        <h2 className="font-black text-xl sm:text-4xl mb-3">Change verdict</h2>
+                        <h2 className="font-black text-xl sm:text-4xl mb-3">Edit Permit Status</h2>
                         <p className="text-md sm:text-2xl text-gray-700 mb-4">
                             {editModal.permit.student_name}'s {editModal.permit.permit_name} permit is currently <strong>{editModal.currentStatus}</strong>.
                             <br />Change to:
