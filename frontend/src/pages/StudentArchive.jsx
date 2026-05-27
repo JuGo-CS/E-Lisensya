@@ -28,23 +28,19 @@ const StudentArchive = ({ studentId }) => {
         CANCELLED: 'bg-gray-200',
     };
 
-    // Group permits by validated date (or date_created if not validated)
+    // Group permits by validated date; fall back to date_created for breached/cancelled
     const grouped = {};
     data.forEach((item) => {
-        const key = item.validated_date_raw || 'Others';
+        // Use validated_date_raw if available, otherwise use the date it was created
+        const key = item.validated_date_raw || item.date_created_raw;
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(item);
     });
 
-    // Sort groups: validated dates descending, 'Others' at the end
-    const sortedGroups = Object.keys(grouped).sort((a, b) => {
-        if (a === 'Others') return 1;
-        if (b === 'Others') return -1;
-        return new Date(b) - new Date(a);
-    });
+    // Sort groups: dates descending
+    const sortedGroups = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
 
     const formatDateLabel = (dateStr) => {
-        if (dateStr === 'Others') return 'Other permits';
         const d = new Date(dateStr + 'T00:00:00');
         return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     };

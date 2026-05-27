@@ -67,6 +67,7 @@ if ($id) {
                 "personnel" => $personnel_name,
                 "status" => $permit["status"],
                 "date_created" => $full_created_date,
+                "date_created_raw" => $permit['date_created'],
                 "arrival_time" => $full_arrival_datetime,
                 "validated_at" => $validated_datetime,
                 "validated_date_raw" => $permit['validated_date'] ?? null
