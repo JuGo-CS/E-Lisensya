@@ -39,10 +39,8 @@ const ProcessedPermits = ({ refreshKey = 0, personnelId }) => {
         const options = [];
         if (currentStatus === 'COMPLETED') {
             options.push({ label: 'Reject', value: 'REJECTED' });
-            options.push({ label: 'Cancel', value: 'CANCELLED' });
         } else if (currentStatus === 'REJECTED') {
             options.push({ label: 'Confirm', value: 'COMPLETED' });
-            options.push({ label: 'Cancel', value: 'CANCELLED' });
         } else if (currentStatus === 'CANCELLED') {
             // CANCELLED is irreversible — no edit options
         }
