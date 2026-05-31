@@ -13,7 +13,7 @@ if (!$id) {
 }
 
 // base person info
-$pstmt = $conn->prepare("SELECT personal_id, first_name, last_name, birthday, username, IFNULL(is_student,0) AS is_student FROM person WHERE personal_id = ?");
+$pstmt = $conn->prepare("SELECT personal_id, first_name, last_name, birthday, username, password, IFNULL(is_student,0) AS is_student FROM person WHERE personal_id = ?");
 $pstmt->bind_param("i", $id);
 $pstmt->execute();
 $pres = $pstmt->get_result();
@@ -31,6 +31,7 @@ $pstmt->close();
 $fullname = trim(($person['first_name'] ?? '') . ' ' . ($person['last_name'] ?? '')); 
 $birthday = $person['birthday'] ?? null;
 $username = $person['username'] ?? null;
+$password = $person['password'] ?? null;
 $is_student = (int)$person['is_student'];
 
 $result = [
@@ -39,6 +40,7 @@ $result = [
     'fullname' => $fullname,
     'birthday' => $birthday,
     'username' => $username,
+    'password' => $password,
     'is_student' => $is_student,
     'contacts' => [],
 ];

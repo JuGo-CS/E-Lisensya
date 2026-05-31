@@ -1,7 +1,7 @@
 <?php
 // DESCRIPTION: 
 //     Allows personnel to reverse/change their verdict on a processed permit.
-//     e.g. REJECTED → COMPLETED, CANCELLED → COMPLETED, COMPLETED → REJECTED, etc.
+//     e.g. REJECTED → COMPLETED, COMPLETED → REJECTED.
 
 include_once '../config/cors.php';
 
@@ -28,7 +28,9 @@ if (!$permit_id || !$new_status) {
 
 // Validate new_status is one of the allowed target statuses
 // Note: CANCELLED is irreversible — once cancelled, it stays cancelled.
-$allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED'];
+// $allowed_targets = ['COMPLETED', 'REJECTED', 'CANCELLED'];
+
+$allowed_targets = ['COMPLETED', 'REJECTED'];
 if (!in_array($new_status, $allowed_targets)) {
     echo json_encode(["success" => false, "message" => "invalid target status"]);
     $conn->close();
@@ -54,7 +56,8 @@ $student_id = (int)$row['student_id'];
 $q->close();
 
 // Only allow editing permits that are already processed (not ACTIVE or PENDING)
-$processed_statuses = ['COMPLETED', 'REJECTED', 'CANCELLED'];
+// $processed_statuses = ['COMPLETED', 'REJECTED', 'CANCELLED'];
+$processed_statuses = ['COMPLETED', 'REJECTED'];
 if (!in_array($current_status, $processed_statuses)) {
     echo json_encode(["success" => false, "message" => "can only edit already processed permits"]);
     $conn->close();
@@ -69,19 +72,19 @@ if ($current_status === $new_status) {
 }
 
 // Special validation: Uncancelling (CANCELLED → ACTIVE) — check for duplicate active or pending permit
-if ($new_status === 'ACTIVE') {
-    $check = $conn->prepare("SELECT COUNT(*) AS cnt FROM permit WHERE UPPER(TRIM(status)) IN ('ACTIVE', 'PENDING') AND student_id = ? AND permit_id != ?");
-    $check->bind_param("ii", $student_id, $permit_id);
-    $check->execute();
-    $check_res = $check->get_result()->fetch_assoc();
-    $check->close();
+// if ($new_status === 'ACTIVE') {
+//     $check = $conn->prepare("SELECT COUNT(*) AS cnt FROM permit WHERE UPPER(TRIM(status)) IN ('ACTIVE', 'PENDING') AND student_id = ? AND permit_id != ?");
+//     $check->bind_param("ii", $student_id, $permit_id);
+//     $check->execute();
+//     $check_res = $check->get_result()->fetch_assoc();
+//     $check->close();
 
-    if ($check_res && (int)$check_res['cnt'] > 0) {
-        echo json_encode(["success" => false, "message" => "Uncancel unsuccessful: Student already has an active or pending permit."]);
-        $conn->close();
-        exit;
-    }
-}
+//     if ($check_res && (int)$check_res['cnt'] > 0) {
+//         echo json_encode(["success" => false, "message" => "Uncancel unsuccessful: Student already has an active or pending permit."]);
+//         $conn->close();
+//         exit;
+//     }
+// }
 
 // Update the permit status and manage permit_arrival / permit_validation rows
 // based on the target status according to the business rules matrix.
